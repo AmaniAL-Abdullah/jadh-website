@@ -1,0 +1,92 @@
+    <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Ring 1 -->
+    <g fill="black">
+        <circle cx="256" cy="40" r="10"/>
+        <circle cx="320" cy="52" r="10"/>
+        <circle cx="380" cy="84" r="10"/>
+        <circle cx="428" cy="132" r="10"/>
+        <circle cx="460" cy="192" r="10"/>
+        <circle cx="472" cy="256" r="10"/>
+        <circle cx="460" cy="320" r="10"/>
+        <circle cx="428" cy="380" r="10"/>
+        <circle cx="380" cy="428" r="10"/>
+        <circle cx="320" cy="460" r="10"/>
+        <circle cx="256" cy="472" r="10"/>
+        <circle cx="192" cy="460" r="10"/>
+        <circle cx="132" cy="428" r="10"/>
+        <circle cx="84" cy="380" r="10"/>
+        <circle cx="52" cy="320" r="10"/>
+        <circle cx="40" cy="256" r="10"/>
+        <circle cx="52" cy="192" r="10"/>
+        <circle cx="84" cy="132" r="10"/>
+        <circle cx="132" cy="84" r="10"/>
+        <circle cx="192" cy="52" r="10"/>
+    </g>
+
+    <!-- Ring 2 -->
+    <g fill="black">
+        <circle cx="256" cy="84" r="8"/>
+        <circle cx="308" cy="96" r="8"/>
+        <circle cx="352" cy="120" r="8"/>
+        <circle cx="392" cy="160" r="8"/>
+        <circle cx="416" cy="204" r="8"/>
+        <circle cx="428" cy="256" r="8"/>
+        <circle cx="416" cy="308" r="8"/>
+        <circle cx="392" cy="352" r="8"/>
+        <circle cx="352" cy="392" r="8"/>
+        <circle cx="308" cy="416" r="8"/>
+        <circle cx="256" cy="428" r="8"/>
+        <circle cx="204" cy="416" r="8"/>
+        <circle cx="160" cy="392" r="8"/>
+        <circle cx="120" cy="352" r="8"/>
+        <circle cx="96" cy="308" r="8"/>
+        <circle cx="84" cy="256" r="8"/>
+        <circle cx="96" cy="204" r="8"/>
+        <circle cx="120" cy="160" r="8"/>
+        <circle cx="160" cy="120" r="8"/>
+        <circle cx="204" cy="96" r="8"/>
+    </g>
+
+    <!-- Ring 3 -->
+    <g fill="black">
+        <circle cx="256" cy="128" r="6"/>
+        <circle cx="296" cy="136" r="6"/>
+        <circle cx="336" cy="160" r="6"/>
+        <circle cx="368" cy="192" r="6"/>
+        <circle cx="384" cy="232" r="6"/>
+        <circle cx="384" cy="280" r="6"/>
+        <circle cx="368" cy="320" r="6"/>
+        <circle cx="336" cy="352" r="6"/>
+        <circle cx="296" cy="376" r="6"/>
+        <circle cx="256" cy="384" r="6"/>
+        <circle cx="216" cy="376" r="6"/>
+        <circle cx="176" cy="352" r="6"/>
+        <circle cx="144" cy="320" r="6"/>
+        <circle cx="127" cy="292" r="6"/>
+        <circle cx="120" cy="256" r="6"/>
+        <circle cx="128" cy="222" r="6"/>
+        <circle cx="144" cy="192" r="6"/>
+        <circle cx="176" cy="160" r="6"/>
+        <circle cx="216" cy="136" r="6"/>
+    </g>
+
+    <!-- Inner Ring -->
+    <g fill="black">
+        <circle cx="256" cy="176" r="4"/>
+        <circle cx="288" cy="188" r="4"/>
+        <circle cx="312" cy="212" r="4"/>
+        <circle cx="324" cy="244" r="4"/>
+        <circle cx="324" cy="268" r="4"/>
+        <circle cx="312" cy="300" r="4"/>
+        <circle cx="288" cy="324" r="4"/>
+        <circle cx="256" cy="336" r="4"/>
+        <circle cx="224" cy="324" r="4"/>
+        <circle cx="200" cy="300" r="4"/>
+        <circle cx="188" cy="268" r="4"/>
+        <circle cx="188" cy="244" r="4"/>
+        <circle cx="200" cy="212" r="4"/>
+        <circle cx="224" cy="188" r="4"/>
+    </g>
+
+    </svg>

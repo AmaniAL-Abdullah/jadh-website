@@ -1,0 +1,189 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import Base from "@/layouts/Base.astro";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+
+const careerIndex = await getListPage("career", "-index");
+if (careerIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+const { title, content, button, about, why, career } = careerIndex.data;
+const careers = await getSinglePage("career");
+---
+
+<Base {...careerIndex.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="text-center">
+        <h1
+          class="h2 pb-4"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(title)}
+        />
+        <div data-aos="fade-up-sm" data-aos-delay="200">
+          <p class="max-w-2xl mx-auto pb-8" set:html={markdownify(content!)} />
+          {
+            button?.enable && (
+              <a href={button.link} class="btn btn-primary">
+                {button.label}
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="flex flex-col gap-20">
+        <ImageMod
+          src={about?.image!}
+          alt="Office Image"
+          class="w-full"
+          data-aos="fade-up-sm"
+          data-aos-delay="300"
+          height={570}
+          width={1160}
+          format="webp"
+        />
+        <div class="row g-4">
+          {
+            about?.stats.map((s) => (
+              <div
+                class="sm:col-6 lg:col-4"
+                data-aos="fade-right-sm"
+                data-aos-delay="100"
+              >
+                <div class="border border-border rounded-lg p-8 h-full">
+                  <h3
+                    class="text-4xl text-center pb-3"
+                    set:html={markdownify(s.value)}
+                  />
+                  <p
+                    class="text-center text-text-light"
+                    set:html={markdownify(s.key)}
+                  />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-primary">
+    <div class="container">
+      <div class="justify-between row g-4 gy-5">
+        <div class="lg:col-4">
+          <h3
+            class="pb-5 text-4xl text-white"
+            data-aos="fade-up-sm"
+            data-aos-delay="100"
+            set:html={markdownify(why?.title!)}
+          />
+          <p
+            class="text-light/50"
+            data-aos="fade-up-sm"
+            data-aos-delay="200"
+            set:html={markdownify(why?.content!)}
+          />
+        </div>
+        <div class="text-white lg:col-6">
+          <div class="flex flex-col gap-7">
+            {
+              why?.points.map((p, i) => (
+                <div
+                  class="flex flex-col gap-5 pb-5 border-b-2 border-border/20"
+                  data-aos="fade-up-sm"
+                  data-aos-delay={100 + i * 100}
+                >
+                  <h3
+                    class="text-2xl text-white"
+                    set:html={markdownify(p.title)}
+                  />
+                  <p
+                    class="text-light/80"
+                    data-aos="fade-up-sm"
+                    data-aos-delay={200 + i * 100}
+                    set:html={markdownify(p.content)}
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-0 mx-5 section">
+    <div class="container">
+      <div class="mb-10 xl:mb-14">
+        <h2
+          class="pb-4 text-4xl text-center"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(career?.title!)}
+        />
+        <p
+          class="max-w-xl mx-auto text-center"
+          data-aos="fade-up-sm"
+          data-aos-delay="200"
+          set:html={markdownify(career?.content!)}
+        />
+      </div>
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          {
+            careers.map((career, i) => (
+              <div class="flex flex-col gap-5 not-last:mb-5">
+                <div
+                  class="row lg:gx-4 items-center border border-border sm:px-4 py-3 rounded-lg"
+                  data-aos="fade-up-sm"
+                  data-aos-delay={200 + i * 100}
+                >
+                  <div class="md:col-6">
+                    <div class="flex items-center gap-5">
+                      <div class="bg-secondary/15 w-10 h-10 rounded-full flex justify-center items-center">
+                        <p class="text-secondary font-bold text-lg">{i + 1}</p>
+                      </div>
+                      <p
+                        class="font-semibold"
+                        set:html={markdownify(career.data.title)}
+                      />
+                    </div>
+                  </div>
+                  <div class="md:col-6">
+                    <div class="flex justify-between items-center pt-3 lg:pt-0">
+                      <p
+                        class="text-text-light"
+                        set:html={markdownify(career?.data?.duration!)}
+                      />
+                      <p
+                        class="text-text-light"
+                        set:html={markdownify(career?.data?.location!)}
+                      />
+                      <a
+                        href={`/career/${career.id}`}
+                        class="btn border border-secondary text-secondary hover:opacity-80"
+                      >
+                        Apply Now
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>

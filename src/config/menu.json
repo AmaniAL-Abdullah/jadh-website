@@ -1,0 +1,20 @@
+{
+  "main": [
+      {
+      "name": "الرئيسية<br><span class='text-sm opacity-70'>Home</span>",
+      "url": "/"
+    },
+      {
+      "name": "من نحن<br><span class='text-sm opacity-70'>About</span>",
+      "url": "/about"
+    },
+        {
+      "name": "خدماتنا<br><span class='text-sm opacity-70'>Services</span>",
+      "url": "/services"
+    },
+    {
+      "name": "تواصل معنا<br><span class='text-sm opacity-70'>Contact</span>",
+      "url": "/contact"
+    }
+  ]
+}

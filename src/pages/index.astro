@@ -1,0 +1,369 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import Base from "@/layouts/Base.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+import Testimonial from "@/partials/Testimonial.astro";
+import { Icon } from "astro-icon/components";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import BlogCard from "@/components/BlogCard.astro";
+import Globe from "@/helpers/Globe";
+import ServiceSlider from "@/components/homepage/ServiceSlider.astro";
+
+const homepage = await getListPage("homepage", "-index");
+const { banner, service, feature, about } = homepage.data;
+
+const testimonial = await getListPage("testimonials", "testimonial");
+const postIndex = await getListPage("blog", "-index");
+const { homepage_title, homepage_description } = postIndex.data;
+const posts = await getSinglePage("blog");
+---
+
+<Base>
+<!-- Banner -->
+<section class="section pt-[75px] pb-0 bg-light">
+  <div class="container relative">
+    <div class="row justify-center row gy-3">
+
+      <div class="lg:col-8 mx-auto">
+        <h1
+          class="text-center leading-[1.05] tracking-[-0.03em]"
+          data-aos="fade-up-sm"
+          data-aos-delay="50"
+          set:html={markdownify(banner.title)}
+        />
+      </div>
+
+      <div class="lg:col-7 mx-auto">
+        <p
+          class="pb-8 text-center text-[17px] leading-[1.9] font-medium text-[#555]"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(banner.content)}
+        />
+      </div>
+
+      {
+        banner.button.enable && (
+          <div
+            class="inline-block text-center"
+            data-aos="fade-up-sm"
+            data-aos-delay="150"
+          >
+            <a class="btn btn-primary" href={banner.button.link}>
+              {banner.button.label}
+            </a>
+          </div>
+        )
+      }
+    </div>
+
+    
+    <Globe client:only="react" />
+    
+  </div>
+</section>
+<!-- Banner -->
+<!-- brand -->
+<section class="relative py-2 md:py-4 overflow-hidden bg-white">
+  <div class="swiper clientlogo-slider">
+    <div class="swiper-wrapper items-center">
+
+      {
+        banner.brands.map((brand) => (
+          <div
+            class="swiper-slide flex items-center justify-center !w-fit px-0 "
+            data-aos="fade-left-sm"
+          >
+            <ImageMod
+              src={brand}
+              alt="Company Logo"
+              class="w-auto h-29 md:h-30 object-contain opacity-100 shrink-0"
+              width={0}
+              height={220}
+            />
+          </div>
+        ))
+      }
+
+    </div>
+  </div>
+</section>
+<!-- brand -->
+<!-- about us -->
+{
+  testimonial.data.enable && (
+    <section class="relative pt-9 pb-12 lg:pb-16 bg-[#040303] bg-no-repeat overflow-hidden">
+      
+      <div
+        class="absolute inset-0 pointer-events-none opacity-[0.18] md:opacity-[0.90]"
+      >
+        <img
+          src="/images/bg-ab.svg"
+          alt=""
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <div class="container relative z-10 text-white">
+        <div class="pt-8 lg:pt-10 !border-none">
+          <div class="items-center justify-center row md:justify-between gy-5 gx-4 xl:gx-5 flex-row-reverse">
+            
+            <div class="col-12 md:col-5 order-1 md:order-1 text-right pr-4">
+              <div class="flex flex-col gap-6">
+                <h2
+                  class="text-white"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(about.title)}
+                />
+
+                <p
+                  class="text-light/80"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(about.content)}
+                />
+
+                <p
+                  class="text-white"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(about.content_2)}
+                />
+
+                {about.button.enable && (
+                  <div class="inline-block" data-aos="fade-up-sm">
+                    <a
+                      href={about.button.link}
+                      class="btn btn-outline-secondary"
+                      set:html={about.button.label}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div class="col-12 md:col-6 order-2 md:order-2">
+              <div
+                class="flex items-center justify-center mt-8 md:mt-0"
+                data-aos="fade-up-sm"
+              >
+                  <ImageMod
+                    class="mx-auto w-full max-w-[900px] md:scale-125 scale-100"
+                    src="/images/pattern-2.png"
+                    width={900}
+                    height={900}
+                    alt={about.title}
+                    format="png"
+                  />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </section>
+  )
+}
+<!-- about us -->
+
+
+  <!-- service -->
+  <section class="pb-0 section">
+    <div class="container">
+      <h2
+        class="pb-8"
+        data-aos="fade-right-sm"
+        set:html={markdownify(service.title)}
+      />
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          service.services.map((s, i: number) => (
+            <div
+              class="p-8 border border-border rounded-xl"
+              data-aos="fade-right-sm"
+              data-aos-delay={i * 100}
+            >
+              <Icon name={s.image} class="w-16 h-16 mb-10 lg:mb-24" />
+              <h3 class="mb-4 text-2xl" set:html={markdownify(s.title)} />
+              <p class="mb-4" set:html={markdownify(s.content)} />
+              {s.button.enable && (
+                <a
+                  href={s.button.link}
+                  class="flex items-center gap-1 transition duration-300 text-[#7a7a7a] hover:opacity-80"
+                >
+                  معرفة المزيد  <span class="sr-only ">Details</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 12l14 0" />
+                    <path d="M13 18l6 -6" />
+                    <path d="M13 6l6 6" />
+                  </svg>
+                </a>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+  <!-- service -->
+
+  <!-- feature -->
+
+  <section class="section">
+    <div class="container">
+      <div class="justify-center mb-10 row xl:mb-14">
+        <div class="lg:col-8">
+          <h2
+            class="text-center mb-6"
+            data-aos="fade-up-sm"
+            set:html={markdownify(feature.title)}
+          />
+        </div>
+        <div class="lg:col-6">
+          <p
+            class="text-center"
+            data-aos="fade-up-sm"
+            set:html={markdownify(feature.content)}
+          />
+        </div>
+      </div>
+      <div
+        class="flex flex-col-reverse gap-10 md:flex-row justify-center lg:justify-between md:items-stretch"
+      >
+        <ServiceSlider feature={feature.features} />
+      </div>
+    </div>
+  </section>
+  <!-- feature -->
+
+  <!-- review -->
+  {
+    testimonial.data.enable && (
+      <section class="section bg-primary">
+        <div class="container text-white relative z-10 max-w-[1400px] mx-auto">
+          <div class="pb-8 lg:pb-10">
+            <div class="flex flex-col gap-10 justify-center">
+              <div>
+                <h2
+                  class="text-white text-center pb-4"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(testimonial.data.homepage_title)}
+                />
+                <p
+                  class="max-w-xl mx-auto text-center text-light/80"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(testimonial.data.content)}
+                />
+              </div>
+
+              <Testimonial
+                testimonials={testimonial.data.testimonials.slice(0, 5)}
+              />
+
+              {false && (
+                <div class="inline-block text-center">
+                  <a href="/reviews" class="btn btn-outline-secondary">
+                    Read All Reviews
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+  <!-- review -->
+
+  <!-- blog -->
+  <!--
+  <section class="pb-0 section">
+    <div class="container">
+      <div class="flex flex-col gap-14">
+        <div class="justify-center row">
+          <div class="lg:col-8">
+            <h2
+              class="pb-4 text-center"
+              data-aos="fade-up-sm"
+              set:html={markdownify(homepage_title!)}
+            />
+            <p
+              class="text-center"
+              data-aos="fade-up-sm"
+              set:html={markdownify(homepage_description!)}
+            />
+          </div>
+        </div>
+        <div class="row g-4">
+          {
+            posts.map((post, i: number) => (
+              <div
+                class="relative sm:col-6 lg:col-4 group"
+                data-aos="fade-up-sm"
+                data-aos-delay={i * 100}
+              >
+                <BlogCard post={post} />
+              </div>
+            ))
+          }
+        </div>
+        
+        <div class="inline-block text-center">
+          <a class="btn btn-outline-primary" href="/blog">
+            Read All Articles
+          </a>
+        </div>
+        -->
+      </div>
+    </div>
+  </section>
+  <!-- blog -->
+
+  <CallToAction />
+</Base>
+
+<script>
+  import { Swiper } from "swiper";
+  import "swiper/css";
+  import { Autoplay } from "swiper/modules";
+
+  document.addEventListener("astro:page-load", () => {
+    new Swiper(".clientlogo-slider", {
+      modules: [Autoplay],
+      speed: 4000,
+      spaceBetween: 0,
+      freeMode: true,
+      autoplay: {
+        delay: 0,
+        disableOnInteraction: false,
+      },
+      loop: true,
+      loopAdditionalSlides: 20,
+
+      breakpoints: {
+        320: {
+          slidesPerView: 2,
+        },
+        768: {
+          slidesPerView: 4,
+        },
+        1200: {
+          slidesPerView: 6,
+        },
+      },
+      allowTouchMove: false,
+    });
+  });
+</script>

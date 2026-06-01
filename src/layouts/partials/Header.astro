@@ -1,0 +1,100 @@
+---
+import Logo from "@/components/Logo.astro";
+import config from "@/config/config.json";
+import menu from "@/config/menu.json";
+import NavDropDown from "./NavDropDown";
+
+export interface ChildNavigationLink {
+  name: string;
+  url: string;
+}
+
+export interface NavigationLink {
+  name: string;
+  url: string;
+  hasChildren?: boolean;
+  children?: ChildNavigationLink[];
+}
+
+const { main }: { main: NavigationLink[] } = menu;
+const { navigation_button } = config;
+const { pathname } = Astro.url;
+---
+
+<header class="header">
+  <nav class="navbar containe flex-row-reverse px-4 ">
+    <!-- logo -->
+    <div class="order-0 ">
+      <Logo />
+    </div>
+    
+    <!-- navbar toggler -->
+    
+    <input id="nav-toggle" type="checkbox" class="hidden" />
+    <label
+      for="nav-toggle"
+      class="order-3 cursor-pointer flex items-center lg:hidden text-text-dark lg:order-1"
+    >
+      <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
+
+        <title>Menu Open</title>
+        <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
+      </svg>
+      <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
+        <title>Menu Close</title>
+        <polygon
+          points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
+          transform="rotate(45 10 10)"></polygon>
+      </svg>
+    </label>
+    
+    <!-- /navbar toggler -->
+    
+    <ul id="nav-menu" class="navbar-nav flex-row-reverse">
+      {
+        main.map((menu) => (
+          <>
+            {menu.hasChildren ? (
+              <NavDropDown menu={menu} pathname={pathname} client:load />
+            ) : (
+              <li class="nav-item">
+                <a
+                  href={menu.url}
+                  class={`nav-link flex flex-col items-center leading-tight ${(pathname === `${menu.url}/` || pathname === menu.url) && "active"}`}
+                  set:html={menu.name}
+                />
+              </li>
+            )}
+          </>
+        ))
+      }
+      {
+        navigation_button.enable && (
+          <li class="mt-4 inline-block lg:hidden">
+            <a
+              class="btn btn-outline-primary btn-sm"
+              href={navigation_button.link}
+            >
+              {navigation_button.label}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+    
+    
+    <div class="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
+      {
+        navigation_button.enable && (
+          <a
+            class="btn btn-outline-primary btn-sm hidden lg:inline-block"
+            href={navigation_button.link}
+          >
+            {navigation_button.label}
+          </a>
+        )
+      }
+    </div>
+    
+  </nav>
+</header>

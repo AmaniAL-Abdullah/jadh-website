@@ -1,0 +1,234 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const careers = await getSinglePage("career");
+
+  const paths = careers.map((career) => ({
+    params: {
+      single: career.id,
+    },
+    props: { career },
+  }));
+  return paths;
+}
+
+const { career } = Astro.props;
+const careers = await getSinglePage("career");
+const { Content } = await render(career);
+
+const { title, duration, vacant, salary } = career.data;
+---
+
+<Base {...career.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="pb-6">
+          <div class="container text-center">
+            <h1
+              class="h2"
+              data-aos="fade-up-sm"
+              data-aos-delay="100"
+              set:html={markdownify(title)}
+            />
+
+            <ul
+              class="mt-4 flex justify-center flex-wrap"
+              data-aos="fade-up-sm"
+              data-aos-delay="200"
+            >
+              <li
+                class="mx-1 capitalize text-text-light"
+                set:html={markdownify(duration!)}
+              />
+              <li
+                class="mx-1 capitalize text-text-light flex items-center gap-2"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
+                ></span>
+                {markdownify(duration!)}
+              </li>
+              <li
+                class="mx-1 capitalize text-text-light flex items-center gap-2"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
+                ></span>
+                {markdownify(vacant!)}
+              </li>
+              <li
+                class="mx-1 capitalize text-text-light flex items-center gap-2"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
+                ></span>
+                {markdownify(salary!)}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <a href="/contact" class="btn btn-primary"> Apply Now</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          <article>
+            <div class="content">
+              <Content />
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-[#f9fcff]">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          <form action="#" method="POST">
+            <div class="sm:flex justify-between gap-10">
+              <div class="mb-6 w-full">
+                <label for="name" class="form-label"> Full Name </label>
+                <input
+                  id="name"
+                  name="name"
+                  class="form-input w-full"
+                  placeholder="John Doe"
+                  type="text"
+                  required
+                />
+              </div>
+              <div class="mb-6 w-full">
+                <label for="mobileNumber" class="form-label">
+                  Mobile Number
+                </label>
+                <input
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  class="form-input w-full"
+                  placeholder="Phone Number"
+                  type="tel"
+                  required
+                />
+              </div>
+            </div>
+            <div class="sm:flex justify-between gap-10">
+              <div class="mb-6 w-full">
+                <label for="email" class="form-label"> Email Address </label>
+                <input
+                  id="email"
+                  name="email"
+                  class="form-input w-full"
+                  placeholder="john.doe@email.com"
+                  type="email"
+                  required
+                />
+              </div>
+              <div class="mb-6 w-full">
+                <label for="protfolio" class="form-label"> Portfolio </label>
+                <input
+                  id="protfolio"
+                  name="protfolio"
+                  class="form-input w-full"
+                  placeholder="http://www.themefisher.com"
+                  type="text"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-6">
+              <label for="cv" class="form-label w-full"> Upload CV </label>
+              <input
+                type="text"
+                id="cv"
+                name="cv"
+                class="form-input w-full"
+                placeholder="Upload CV"
+                required
+              />
+            </div>
+            <div class="mb-6">
+              <label for="message" class="form-label"> Cover Letter </label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-input"
+                placeholder="Message goes here..."
+                rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-0 mx-5 section">
+    <div class="container">
+      <div class="mb-10 xl:mb-14">
+        <h2
+          class="pb-4 text-4xl text-center"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+        >
+          See Related Positions
+        </h2>
+      </div>
+      <div class="row justify-center">
+        <div class="lg:col-10">
+          {
+            careers.slice(0, 3).map((career, i: number) => (
+              <div class="flex flex-col gap-5 not-last:mb-5">
+                <div
+                  class="row lg:gx-4 items-center border border-border sm:px-4 py-3 rounded-lg"
+                  data-aos="fade-up-sm"
+                  data-aos-delay={200 + i * 100}
+                >
+                  <div class="md:col-6">
+                    <div class="flex items-center gap-5">
+                      <div class="bg-secondary/15 w-10 h-10 rounded-full flex justify-center items-center">
+                        <p class="text-secondary font-bold text-lg">{i + 1}</p>
+                      </div>
+                      <p
+                        class="font-semibold"
+                        set:html={markdownify(career.data.title)}
+                      />
+                    </div>
+                  </div>
+                  <div class="md:col-6">
+                    <div class="flex justify-between items-center pt-3 lg:pt-0">
+                      <p
+                        class="text-text-light"
+                        set:html={markdownify(career?.data?.duration!)}
+                      />
+                      <p
+                        class="text-text-light"
+                        set:html={markdownify(career?.data?.location!)}
+                      />
+                      <a
+                        href={`/career/${career.id}`}
+                        class="btn border border-secondary text-secondary hover:opacity-80"
+                      >
+                        Apply Now
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>

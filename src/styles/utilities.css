@@ -1,0 +1,11 @@
+.hover-border-effect {
+  @apply relative border-b border-[#0a0a0a1a] transition duration-300;
+
+  &::after {
+    @apply content-[''] absolute -bottom-px right-0 w-0 h-px bg-secondary transition-all duration-300;
+  }
+
+  &:hover::after {
+    @apply w-[40%];
+  }
+}

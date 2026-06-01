@@ -1,0 +1,59 @@
+---
+import dateFormat from "@/lib/utils/dateFormat";
+import { render, type CollectionEntry } from "astro:content";
+import ImageMod from "./components/ImageMod.astro";
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+
+const { Content } = await render(post);
+const { title, author, author_image, image, date } = post.data;
+---
+
+<section class="section bg-light pb-0">
+  <div class="container">
+    <h1 class="text-center pb-7 text-balance" set:html={title} />
+    <div class="flex items-center justify-center gap-10 pb-24 xl:pb-28">
+      <div class="flex items-center gap-2">
+        <ImageMod
+          src={author_image!}
+          alt="Author Image"
+          class="w-10 h-10 rounded-full"
+          height={40}
+          width={40}
+          format="webp"
+        />
+        <p class="text-black font-medium" set:html={author} />
+      </div>
+      <p class="text-text-light">{dateFormat(date!)}</p>
+    </div>
+    <div class="row justify-center">
+      <div class="lg:col-10">
+        <ImageMod
+          src={image!}
+          alt="Blog Image"
+          width={974}
+          format="webp"
+          height={440}
+          class="w-full aspect-[2.21/1] object-cover rounded-lg"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section pb-0">
+  <div class="container">
+    <div class="row justify-center">
+      <div class="lg:col-9">
+        <article>
+          <div class="content">
+            <Content />
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>

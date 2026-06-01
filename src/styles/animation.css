@@ -1,0 +1,41 @@
+.spin-animation {
+  animation: spin 60s linear infinite;
+}
+/* spin-animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* aos animation */
+[data-aos="fade-up-sm"] {
+  transform: translateY(30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+  &.aos-animate {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+[data-aos="fade-left-sm"] {
+  transform: translateX(30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+  &.aos-animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+[data-aos="fade-right-sm"] {
+  transform: translateX(-30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+  &.aos-animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

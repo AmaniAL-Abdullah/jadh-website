@@ -1,0 +1,124 @@
+---
+// ServiceSlider.astro
+import DynamicIcon from "@/helpers/DynamicIcon";
+import { markdownify } from "@/lib/utils/textConverter";
+
+import ImageMod from "../ImageMod.astro";
+
+interface Props {
+  feature: any[];
+}
+
+const { feature } = Astro.props;
+---
+
+<div class="w-full md:w-1/2 md:order-2">
+  <div
+    class="relative h-full border border-border bg-[#fafafa] rounded-xl overflow-hidden"
+    data-aos="fade-right-sm"
+  >
+
+    <div class="relative p-8 md:h-full h-[500px] md:p-14">
+
+      <!-- Background Logo -->
+      <div class="absolute inset-0 bg-[url('/images/JD.svg')] bg-[length:95%] bg-[position:center_60%] bg-no-repeat opacity-[0.03]"></div>
+
+      {
+        feature.map((f, i) => (
+          <div
+            class={`absolute w-[90%] md:w-max h-max top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${
+              i === 0
+                ? "opacity-100"
+                : "opacity-0 pointer-events-none"
+            }`}
+            data-tab-content={i}
+          >
+            <ImageMod
+              src={f.image}
+              width={280}
+              height={280}
+              alt="feature image"
+              class="mx-auto object-contain"
+            />
+          </div>
+        ))
+      }
+
+    </div>
+  </div>
+</div>
+
+<div class="w-full md:w-1/2 md:order-1">
+  <div class="row md:gy-4 text-right" dir="rtl">
+
+    {
+      feature.map((f, i) => (
+        <div data-tab-trigger={i} class="cursor-pointer">
+
+          <div
+            class="flex gap-5 pb-10 md:pb-7 items-start text-right justify-end"
+            dir="rtl"
+            data-aos="fade-left-sm"
+            data-aos-delay={i * 100}
+          >
+
+            <div class="w-16 h-16 flex items-center justify-center">
+              <ImageMod
+                src={f.icon}
+                alt="feature icon"
+                width={56}
+                height={56}
+                class="object-contain"
+              />
+            </div>
+
+            <div class="pb-5 hover-border-effect text-right w-full">
+              <h3
+                class="pb-4 text-2xl"
+                set:html={markdownify(f.title)}
+              />
+
+              <p set:html={markdownify(f.description)} />
+            </div>
+
+          </div>
+        </div>
+      ))
+    }
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const tabTriggers = document.querySelectorAll("[data-tab-trigger]");
+    const tabContents = document.querySelectorAll("[data-tab-content]");
+
+    function setActiveTab(index: string | null) {
+      tabContents.forEach((content) => {
+        content.classList.remove("opacity-100");
+        content.classList.add("opacity-0", "pointer-events-none");
+      });
+
+      const activeContent = document.querySelector(
+        `[data-tab-content="${index}"]`
+      );
+
+      if (activeContent) {
+        activeContent.classList.remove(
+          "opacity-0",
+          "pointer-events-none"
+        );
+
+        activeContent.classList.add("opacity-100");
+      }
+    }
+
+    tabTriggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const index = trigger.getAttribute("data-tab-trigger");
+        setActiveTab(index);
+      });
+    });
+  });
+</script>

@@ -1,0 +1,49 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  testimonials: CollectionEntry<"testimonials">["data"]["testimonials"];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<div class="row g-4 justify-center"  dir="rtl" >
+  {
+    testimonials.map((t, i: number) => (
+      <div class="sm:col-6 lg:col-4" data-aos="fade-up-sm" data-aos-delay={(i % 3) * 100}>
+        <div class="border border-border/80 p-6 rounded-xl h-full text-right">
+          <div class="pb-3 flex justify-end text-white/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="none">
+              <path
+                fill="currentColor"
+                d="M18.75 15C12.562 15 7.5 20.063 7.5 26.25V45h18.75V26.25h-15c0-4.16 3.34-7.5 7.5-7.5V15zM45 15c-6.188 0-11.25 5.063-11.25 11.25V45H52.5V26.25h-15c0-4.16 3.34-7.5 7.5-7.5V15zM11.25 30H22.5v11.25H11.25V30zm26.25 0h11.25v11.25H37.5V30z"
+                opacity=".4"
+              />
+            </svg>
+          </div>
+          <p class="pb-12" set:html={markdownify(t.content)} />
+          <div class="flex items-center gap-4 w-full">
+            <img
+              src={t.avatar}
+              alt="client image"
+              width="56"
+              height="56"
+              class="w-14 h-14 rounded-full object-cover shrink-0 block"
+            />
+
+            <div class="text-right">
+              <p class="text-lg pb-1" set:html={markdownify(t.name)} />
+              <p
+                class="text-sm text-white/80"
+                set:html={markdownify(t.designation)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>

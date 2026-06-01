@@ -1,0 +1,23 @@
+.btn {
+  @apply inline-block rounded-3xl px-5 py-2 border  font-medium capitalize transition duration-300 cursor-pointer;
+}
+
+.btn-sm {
+  @apply px-4 py-1.5 text-sm;
+}
+
+.btn-primary {
+  @apply bg-primary hover:opacity-80 border-primary text-white;
+}
+
+.btn-outline-primary {
+  @apply text-text-dark hover:opacity-80 border-primary bg-transparent hover:!text-text-dark;
+}
+
+.btn-secondary {
+  @apply bg-white hover:opacity-80 border-white text-text-dark;
+}
+
+.btn-outline-secondary {
+  @apply text-white hover:opacity-80 border-white bg-transparent;
+}

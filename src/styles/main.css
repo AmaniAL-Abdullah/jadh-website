@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@plugin "../tailwind-plugin/tw-theme.mjs";
+@plugin "../tailwind-plugin/tw-bs-grid.mjs";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@import "./safe.css";
+@import "./utilities.css";
+
+@layer base {
+  @import "./base.css";
+}
+
+@layer components {
+  @import "./components.css";
+  @import "./navigation.css";
+  @import "./buttons.css";
+  @import "./animation.css";
+}
+
+@theme {
+  --breakpoint-sm: 540px;
+
+  --shadow: 0px 4px 40px rgba(0, 0, 0, 0.05);
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}

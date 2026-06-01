@@ -1,0 +1,119 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import menu from "@/config/menu.json";
+
+const { footer }: { footer: any } = menu;
+---
+<footer class="pt-5 pb-0 bg-body">
+  <div class="container">
+
+    <!-- Top -->
+    <div class="text-center mb-8">
+      <ImageMod
+        class="w-44 mx-auto mb-4"
+        src="/images/logo.png"
+        alt="logo"
+        width={0}
+        height={0}
+      />
+
+    <p class="text-sm text-text-light tracking-wide">
+      <span class="block">
+        حلول متكاملة للأعمال والشراكات والتشغيل
+      </span>
+
+      <span class="block mt-1">
+        Integrated business solutions
+      </span>
+    </p>
+    </div>
+
+    <!-- Main Footer -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-black/10">
+
+            <!-- Contact -->
+          <div class="text-center order-3 md:order-1">
+            <h6 class="mb-4 text-black font-semibold">الموقع</h6>
+
+            <div class="flex flex-col gap-0.5">
+              <a
+                href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
+                target="_blank"
+                class="text-text-light hover:text-black transition"
+              >
+                الرياض، السعودية
+              </a>
+
+              <a
+                href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
+                target="_blank"
+                class="text-text-light hover:text-black transition"
+              >
+                بيشة، السعودية
+              </a>
+            </div>
+          </div>
+      <!-- Links -->
+
+
+      <!-- Social -->
+      <div class="text-center order-1 md:order-2">
+        <h6 class="mb-4 text-black font-semibold">تواصل</h6>
+
+        <div class="flex justify-center gap-5 mb-2">
+
+          <!-- X -->
+          <a href="https://x.com/jadhksa?s=21" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+              <path d="m18.901 1.153-5.61 6.41L8.44 1.153H1.8l8.173 9.343L1.8 19.847h2.708l6.667-7.62 5.255 7.62H22.2l-8.598-9.826 7.998-8.868H18.9Z"/>
+            </svg>
+          </a>
+
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/meshal-alharthi-83a1b418b/m" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+              <path d="M4.98 3.5C4.98 4.604 4.104 5.5 3 5.5s-1.98-.896-1.98-2S1.896 1.5 3 1.5s1.98.896 1.98 2ZM1 8h4v12H1V8Zm7 0h3.6v1.71h.05c.5-.95 1.72-1.95 3.54-1.95C19 7.76 20 10.08 20 13.08V20h-4v-6.08c0-1.45-.03-3.32-2.02-3.32-2.02 0-2.33 1.58-2.33 3.21V20H8V8Z"/>
+            </svg>
+          </a>
+
+          <!-- Email -->
+          <a href="mailto:info@jadh.sa" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.24-8 5-8-5V6l8 5 8-5v2.24Z"/>
+            </svg>
+          </a>
+
+          <!-- WhatsApp -->
+          <a href="https://wa.me/966500000000" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+              <path d="M12.04 2C6.52 2 2 6.42 2 11.88c0 1.75.46 3.45 1.33 4.95L2 22l5.3-1.38a10.1 10.1 0 0 0 4.74 1.2h.01C17.57 21.82 22 17.4 22 11.94 22 6.48 17.57 2 12.04 2Zm0 17.94h-.01a8.4 8.4 0 0 1-4.27-1.17l-.3-.18-3.14.82.84-3.06-.2-.32a8.28 8.28 0 0 1-1.28-4.39c0-4.6 3.75-8.35 8.36-8.35a8.3 8.3 0 0 1 5.91 2.45 8.26 8.26 0 0 1 2.44 5.9c0 4.6-3.75 8.35-8.35 8.35Z"/>
+            </svg>
+          </a>
+        </div>
+                <a
+          href="tel:0176227083"
+          class="text-text-light hover:text-black transition"
+        >
+          0176227083
+        </a>
+      </div>
+
+      <div class="text-center order-2 md:order-3">
+        <h6 class="mb-4 text-black font-semibold">روابط</h6>
+
+        <ul class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-text-light max-w-[220px] mx-auto">
+          <li><a href="/services" class="hover:text-black transition">الخدمات</a></li>
+          <li><a href="/about" class="hover:text-black transition">من نحن</a></li>
+          <li><a href="/" class="hover:text-black transition">الرئيسية</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="pt-1 mt-1 border-t border-black/10 text-center text-sm text-text-light">
+      © 2026 Jadh Al Ofoq | جادة الأفق 
+    </div>
+
+  </div>
+</footer>

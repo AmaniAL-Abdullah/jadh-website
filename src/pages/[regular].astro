@@ -1,0 +1,62 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import { render } from "astro:content";
+
+// get static paths for all pages
+export async function getStaticPaths() {
+  const COLLECTION_FOLDER = "pages";
+
+  const pages = await getSinglePage(COLLECTION_FOLDER);
+
+  const paths = pages.map((page) => ({
+    params: {
+      regular: page.id,
+    },
+    props: { page },
+  }));
+  return paths;
+}
+
+const { page } = Astro.props;
+const { title, description, button } = page.data;
+const { Content } = await render(page);
+---
+
+<Base {...page.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <h1
+          class="pb-4"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(title)}
+        />
+        <div data-aos="fade-up-sm" data-aos-delay="200">
+          <p class="pb-8" set:html={markdownify(description!)} />
+        </div>
+        {
+          button?.enable && (
+            <a href={button?.link} class="btn btn-primary">
+              {button?.label}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-10">
+          <div class="content">
+            <Content />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

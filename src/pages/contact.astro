@@ -1,0 +1,96 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+
+const pageIndex = await getListPage("contact", "-index");
+if (pageIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+---
+
+<Base {...pageIndex.data} title="تواصل معنا | جادة الأفق">
+  <section class="section bg-light">
+    <div class="container">
+      <h1 class="text-center" data-aos="fade-up-sm">تواصل معنا<br>Contact Us</h1>
+    </div>
+  </section>
+
+  <section class="section pb-0">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          <form
+            action="/api/contact"
+            method="POST"
+            enctype="application/x-www-form-urlencoded"
+            dir="rtl"
+          >
+            <div class="sm:flex justify-between gap-10">
+              <div
+                class="mb-6 w-full"
+                data-aos="fade-up-sm"
+                data-aos-delay="100"
+              >
+                <label for="name" class="form-label block text-right">الأسم كامل<br> Full Name </label>
+                <input
+                  id="name"
+                  name="name"
+                  class="form-input text-right w-full bg-tertiary/5!"
+                  placeholder="Name"
+                  type="text"
+                  required
+                />
+              </div>
+              <div
+                class="mb-6 w-full"
+                data-aos="fade-up-sm"
+                data-aos-delay="150"
+              >
+                <label for="mobileNumber" class="form-label">
+                  رقم الهاتف<br>Mobile Number
+                </label>
+                <input
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  class="form-input w-full bg-tertiary/5!"
+                  placeholder="Phone Number"
+                  type="text"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-6" data-aos="fade-up-sm" data-aos-delay="200">
+              <label for="email" class="form-label">البريد الإلكتروني<br> Email Address </label>
+              <input
+                id="email"
+                name="email"
+                class="form-input text-right bg-tertiary/5!"
+                placeholder="Email"
+                type="email"
+                required
+              />
+            </div>
+            <div class="mb-6" data-aos="fade-up-sm" data-aos-delay="250">
+              <label for="message" class="form-label"> الرسالة<br>Messages </label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-input text-right bg-tertiary/5!"
+                placeholder="Type your message"
+                rows="3"></textarea>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              data-aos="fade-up-sm"
+              data-aos-delay="300">إرسال</button
+            >
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>

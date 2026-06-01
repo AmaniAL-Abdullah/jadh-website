@@ -1,0 +1,158 @@
+---
+import CustomAccordion from "@/helpers/CustomAccordion";
+import Base from "@/layouts/Base.astro";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+import Testimonial from "@/partials/Testimonial.astro";
+import { Icon } from "astro-icon/components";
+import ImageMod from "@/components/ImageMod.astro";
+
+const serviceIndex = await getListPage("services", "-index");
+if (serviceIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+const { banner_title, description, button } = serviceIndex.data;
+const testimonial = await getListPage("testimonials", "testimonial");
+const services = await getSinglePage("services");
+const faqs = await getListPage("faq", "faq");
+---
+
+<Base {...serviceIndex.data} title="خدماتنا | جادة الأفق">
+  <section class="section bg-light ">
+    <div class="container">
+      <div class="flex flex-col lg:flex-row-reverse items-center gap-24">
+
+        <div class="lg:w-[70%] text-right">
+          {
+            banner_title && (
+              <h1
+                class="pb-4"
+                data-aos="fade-up-sm"
+                set:html={markdownify(banner_title)}
+              />
+            )
+          }
+
+          {
+            description && (
+              <div data-aos="fade-up-sm" data-aos-delay="100">
+                <p class="pb-8" set:html={markdownify(description)} />
+              </div>
+            )
+          }
+
+          {
+            button?.enable && (
+              <a
+                href={button.link}
+                class="btn btn-primary"
+                data-aos="fade-up-sm"
+                data-aos-delay="200"
+              >
+                {button.label}
+              </a>
+            )
+          }
+        </div>
+
+        <div class="lg:w-[30%] flex justify-center">
+          <ImageMod
+            src="/images/pt-s.png"
+            alt="Services"
+            width={0}
+            height={0}
+            class="w-full max-w-[450px] h-auto"
+          />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div
+        class="flex flex-col gap-20 lg:gap-24 xl:gap-32 max-w-xl lg:max-w-full mx-auto"
+      >
+        {
+          services.map((s, i) => (
+            <div  dir="rtl" class="flex flex-col lg:flex-row justify-between items-center gap-10">
+              <div
+                class={`lg:w-[60%] w-full text-right ${i % 2 !== 0 && "lg:order-2"}`}
+                data-aos={`${i % 2 !== 0 ? "fade-left-sm" : "fade-right-sm"}`}
+                data-aos-delay={i * 100}
+              >
+                <h3 class="text-4xl pb-8" set:html={s.data.title} />
+                <p class="pb-6" set:html={s.data.contact_1} />
+                <p class="pb-8" set:html={s.data.contact_2} />
+                {s?.data?.button?.enable && (
+                  <a href={s.data.button.link} class="btn btn-primary">
+                    {s.data.button.label}
+                  </a>
+                )}
+              </div>
+              <div
+                class={`lg:w-[40%] w-full flex justify-end`}
+                data-aos={`${i % 2 !== 0 ? "fade-right-sm" : "fade-left-sm"}`}
+                data-aos-delay={i * 100}
+              >
+                <div class="border border-border rounded-xl p-16 md:p-20">
+                  <Icon
+                    name={s.data.image}
+                    class={`h-auto w-full text-[220px] text-black ${
+                      i !== services.length - 1 ? "spin-animation" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    testimonial.data.enable && (
+      <section class="section bg-primary">
+        <div class="container text-white">
+          <div class="pb-24 lg:pb-28">
+            <div class="flex flex-col gap-10 justify-center">
+              <div>
+                <h2
+                  class="text-white text-center pb-4"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(testimonial.data.homepage_title)}
+                />
+                <p
+                  class="max-w-xl mx-auto text-center text-light/80"
+                  data-aos="fade-up-sm"
+                  set:html={markdownify(testimonial.data.content)}
+                />
+              </div>
+
+              <Testimonial
+                testimonials={testimonial.data.testimonials.slice(0, 5)}
+              />
+            {false && (
+              <div
+                class="inline-block text-center"
+                data-aos="fade-up-sm"
+                data-aos-delay="400"
+              >
+                <a href="/reviews" class="btn btn-outline-secondary">
+                  Read All Reviews
+                </a>
+              </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {faqs.data.enable && <CustomAccordion faqs={faqs.data} client:only="react" />}
+  <CallToAction />
+</Base>

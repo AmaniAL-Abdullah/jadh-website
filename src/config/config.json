@@ -1,0 +1,41 @@
+{
+  "site": {
+    "title": "جادة الافق - سلاسل اعمال",
+    "base_url": "https://odfense-astro.vercel.app",
+    "base_path": "/",
+    "trailing_slash": false,
+    "favicon": "/images/favicon.png",
+    "logo": "/images/logo.png",
+    "logo_width": "130",
+    "logo_height": "60",
+    "logo_text": "odfense"
+  },
+
+  "settings": {
+    "default_theme": "system",
+    "pagination": 2,
+    "summary_length": 200,
+    "blog_folder": "blog"
+  },
+
+  "params": {
+    "contact_form_action": "#",
+    "copyright": "Designed And Developed by [Themefisher](https://themefisher.com/)"
+  },
+
+  "navigation_button": {
+    "enable": false,
+    "label": "Get This Template",
+    "link": "https://themefisher.com/products/odfense-astro"
+  },
+
+  "metadata": {
+    "meta_author": "Themefisher",
+    "meta_image": "/images/og-image.png",
+    "meta_description": "جادة الأفق شركة تقدم حلول الأعمال والتشغيل والتقنية والشراكات"
+  },
+  "google_tag_manager": {
+    "enable": false,
+    "gtm_id": "GTM-XXXXXX"
+  }
+}

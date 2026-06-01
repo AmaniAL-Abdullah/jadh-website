@@ -1,0 +1,54 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+import { render } from "astro:content";
+
+const terms = await getListPage("terms", "terms");
+if (!terms.data.enable) {
+  return null;
+}
+const { header } = terms.data;
+const { Content } = await render(terms);
+---
+
+<Base {...terms.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-xl mx-auto text-center">
+        <h1
+          class="h2 pb-4"
+          data-aos="fade-up-sm"
+          set:html={markdownify(header.title)}
+        />
+        <p
+          class="pb-8"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(header.content)}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section pb-0">
+    <div class="container">
+      <div
+        class="row justify-center"
+        data-aos="fade-up-sm"
+        data-aos-delay="200"
+      >
+        <div class="lg:col-8">
+          <article>
+            <div class="content">
+              <Content />
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>

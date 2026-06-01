@@ -1,0 +1,53 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Base from "@/layouts/Base.astro";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+
+const postIndex = await getListPage("blog", "-index");
+if (postIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+const { header_title, description } = postIndex.data;
+const posts = await getSinglePage("blog");
+---
+
+<Base {...postIndex.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <h1
+          class="pb-4"
+          data-aos="fade-up-sm"
+          set:html={markdownify(header_title!)}
+        />
+        <p
+          class="pb-8"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(description)}
+        />
+      </div>
+    </div>
+  </section>
+  <section class="section pb-0">
+    <div class="container">
+      <div class="row g-4">
+        {
+          posts.map((post, i) => (
+            <div
+              data-aos="fade-up-sm"
+              data-aos-delay={(i % 3) * 100}
+              class="relative sm:col-6 lg:col-4 group"
+            >
+              <BlogCard post={post} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>

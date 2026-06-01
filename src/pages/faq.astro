@@ -1,0 +1,36 @@
+---
+import CustomAccordion from "@/helpers/CustomAccordion";
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+
+const faqs = await getListPage("faq", "faq");
+if (!faqs.data.enable) {
+  return null;
+}
+const { header } = faqs.data;
+---
+
+<Base {...faqs.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <h1
+          class="pb-4"
+          data-aos="fade-up-sm"
+          set:html={markdownify(header.title)}
+        />
+        <p
+          class="pb-8 text-balance"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(header.content)}
+        />
+      </div>
+    </div>
+  </section>
+
+  <CustomAccordion faqs={faqs.data} client:only="react" />
+  <CallToAction />
+</Base>

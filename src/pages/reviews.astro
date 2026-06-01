@@ -1,0 +1,37 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import CallToAction from "@/partials/CallToAction.astro";
+import Testimonial from "@/partials/Testimonial.astro";
+
+const testimonial = await getListPage("testimonials", "testimonial");
+if (!testimonial.data.enable) {
+  return null;
+}
+const { title, content, testimonials } = testimonial.data;
+---
+
+<Base {...testimonial.data}>
+  <section class="section bg-light">
+    <div class="container">
+      <div class="max-w-2xl mx-auto text-center">
+        <h1 class="pb-4" data-aos="fade-up-sm" set:html={markdownify(title)} />
+        <p
+          class="pb-8"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          set:html={markdownify(content)}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section pb-0">
+    <div class="container">
+      <Testimonial testimonials={testimonials} />
+    </div>
+  </section>
+
+  <CallToAction />
+</Base>
