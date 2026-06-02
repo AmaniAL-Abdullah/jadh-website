@@ -8,8 +8,8 @@
     const data = await request.formData();
 
     await resend.emails.send({
-        from: "jadhdigital@jadh.ai",
-        to: "jadhdigital@jadh.ai",
+        from: "hq@jadh.ai",
+        to: "hq@jadh.ai",
         subject: "رسالة جديدة من موقع جادة الأفق",
         html: `
         <p>الاسم: ${data.get("name")}</p>
