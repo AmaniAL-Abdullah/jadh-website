@@ -10,6 +10,6 @@ contact_2: "نعمل على تقديم أنظمة وحلول تقنية تدعم
 button:
   enable: true
   label: "ابدا الأن"
-  link: "mailto:contact@athar-studios.com?subject=الحلول%20التقنية&body=مرحباً%20جادة%20الأفق،%20لدي%20اهتمام%20بالحلول%20التقنية،%20وأتطلع%20للتواصل%20معكم."
+  link: "https://athar-studios.com/"
 ---
 
