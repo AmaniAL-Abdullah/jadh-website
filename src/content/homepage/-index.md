@@ -1,11 +1,11 @@
 ---
 # Banner
 banner:
-  title: "<span class='block text-[44px] md:text-[64px] leading-[1] font-bold tracking-[-0.03em] text-black'> جـادة الأفـق </span><span class='block mt-2 text-[24px] md:text-[40px] leading-[1.1] font-semibold tracking-[-0.02em] text-[#7a7a7a]'>حلـول تُحدث الفـرق </span> <span class='block mt-7 text-[15px] md:text-[35px] font-semibold tracking-[0.03em] uppercase text-black/85'>JADH AL OFOQ </span> <span class='block mt-1 text-[15px] md:text-[25px] leading-[1.2] font-semibold tracking-[0.01em] text-[#7a7a7a]'>Solutions That Move Business Forward </span>"
+  title: "<span class='block text-[44px] md:text-[64px] leading-[1] font-bold tracking-[-0.03em] text-white'> جـادة الأفـق </span><span class='block mt-2 text-[24px] md:text-[40px] leading-[1.1] font-semibold tracking-[-0.02em] text-white/70'>حلـول تُحدث الفـرق </span> <span class='block mt-7 text-[15px] md:text-[35px] font-semibold tracking-[0.03em] uppercase text-white/90'>JADH AL OFOQ </span> <span class='block mt-1 text-[15px] md:text-[25px] leading-[1.2] font-semibold tracking-[0.01em] text-white/70'>Solutions That Move Business Forward </span>"
   content: ""
   image: "/images/hero-img.png"
   button:
-    enable: false
+    enable: true
     label: "ابدء الان"
     link: "/contact"
   brands:

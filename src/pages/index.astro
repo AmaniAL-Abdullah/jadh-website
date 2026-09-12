@@ -12,6 +12,9 @@ import ServiceSlider from "@/components/homepage/ServiceSlider.astro";
 
 const homepage = await getListPage("homepage", "-index");
 const { banner, service, feature, about } = homepage.data;
+const brandLogos = [...new Set(banner.brands)].map((src) =>
+  src.replace("/company-logo/", "/company-logo/trimmed/"),
+);
 
 const testimonial = await getListPage("testimonials", "testimonial");
 const postIndex = await getListPage("blog", "-index");
@@ -21,8 +24,8 @@ const posts = await getSinglePage("blog");
 
 <Base>
 <!-- Banner -->
-<section class="section pt-[75px] pb-0 bg-light">
-  <div class="container relative">
+<section class="relative overflow-hidden bg-gradient-to-b from-[#02005B] via-[#034EFF] to-white pt-20 pb-0 md:pt-28">
+  <div class="container relative z-10">
     <div class="row justify-center row gy-3">
 
       <div class="lg:col-8 mx-auto">
@@ -36,7 +39,7 @@ const posts = await getSinglePage("blog");
 
       <div class="lg:col-7 mx-auto">
         <p
-          class="pb-8 text-center text-[17px] leading-[1.9] font-medium text-[#555]"
+          class="pb-8 text-center text-[17px] leading-[1.9] font-medium text-white/70"
           data-aos="fade-up-sm"
           data-aos-delay="100"
           set:html={markdownify(banner.content)}
@@ -50,7 +53,7 @@ const posts = await getSinglePage("blog");
             data-aos="fade-up-sm"
             data-aos-delay="150"
           >
-            <a class="btn btn-primary" href={banner.button.link}>
+            <a class="btn btn-secondary" href={banner.button.link}>
               {banner.button.label}
             </a>
           </div>
@@ -58,38 +61,12 @@ const posts = await getSinglePage("blog");
       }
     </div>
 
-    
-    <Globe client:only="react" />
-    
-  </div>
-</section>
-<!-- Banner -->
-<!-- brand -->
-<section class="relative py-2 md:py-4 overflow-hidden bg-white">
-  <div class="swiper clientlogo-slider">
-    <div class="swiper-wrapper items-center">
-
-      {
-        banner.brands.map((brand) => (
-          <div
-            class="swiper-slide flex items-center justify-center !w-fit px-0 "
-            data-aos="fade-left-sm"
-          >
-            <ImageMod
-              src={brand}
-              alt="Company Logo"
-              class="w-auto h-29 md:h-30 object-contain opacity-100 shrink-0"
-              width={0}
-              height={220}
-            />
-          </div>
-        ))
-      }
-
+    <div data-globe-size class="relative mx-auto flex h-[220px] w-full max-w-[900px] items-start justify-center overflow-hidden md:h-[340px] lg:h-[420px]">
+      <Globe client:only="react" />
     </div>
   </div>
 </section>
-<!-- brand -->
+<!-- Banner -->
 <!-- about us -->
 {
   testimonial.data.enable && (
@@ -287,6 +264,39 @@ const posts = await getSinglePage("blog");
   }
   <!-- review -->
 
+  <!-- brand -->
+  <section class="bg-white py-16 md:py-20 lg:py-24">
+    <div class="container">
+      <div class="mb-10 text-center md:mb-12">
+        <p
+          class="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-text-light"
+          data-aos="fade-up-sm"
+        >
+          Our Partners
+        </p>
+        <h2 data-aos="fade-up-sm" data-aos-delay="50">
+          شركاؤنا
+        </h2>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 md:gap-x-12 md:gap-y-8">
+        {
+          brandLogos.map((brand) => (
+            <div class="flex w-40 items-center justify-center">
+              <ImageMod
+                src={brand}
+                alt="Company Logo"
+                class="max-h-14 w-auto max-w-full object-contain md:max-h-20 lg:max-h-24"
+                height={96}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+  <!-- brand -->
+
   <!-- blog -->
   <!--
   <section class="pb-0 section">
@@ -333,37 +343,3 @@ const posts = await getSinglePage("blog");
 
   <CallToAction />
 </Base>
-
-<script>
-  import { Swiper } from "swiper";
-  import "swiper/css";
-  import { Autoplay } from "swiper/modules";
-
-  document.addEventListener("astro:page-load", () => {
-    new Swiper(".clientlogo-slider", {
-      modules: [Autoplay],
-      speed: 4000,
-      spaceBetween: 0,
-      freeMode: true,
-      autoplay: {
-        delay: 0,
-        disableOnInteraction: false,
-      },
-      loop: true,
-      loopAdditionalSlides: 20,
-
-      breakpoints: {
-        320: {
-          slidesPerView: 2,
-        },
-        768: {
-          slidesPerView: 4,
-        },
-        1200: {
-          slidesPerView: 6,
-        },
-      },
-      allowTouchMove: false,
-    });
-  });
-</script>

@@ -115,18 +115,6 @@
   }
 }
 
-#globeCanvas {
-  @apply relative overflow-y-clip max-sm:overflow-x-clip w-[300px] md:w-[708px] max-w-[600px] m-auto h-[250px] md:h-[420px];
-
-  canvas {
-    @apply absolute w-full md:h-full h-2/3 bottom-0;
-  }
-}
-
-#globeCanvas::before {
-  @apply content-[""] bg-[url('/images/svg/globe.svg')] bg-cover bg-no-repeat absolute w-full h-full top-[85%] md:top-[72%] left-[46%] scale-[1.2] transform translate-x-[-50%] translate-y-[-50%];
-}
-
 /* content style */
 .content {
   @apply [&>*:first-child]:mt-0 [&>*:first-child]:pt-0;

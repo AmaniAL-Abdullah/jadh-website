@@ -8,6 +8,7 @@ const Globe = () => {
   const pointerInteractionMovement = useRef(0);
   const globeRef = useRef(null);
   const [width, setWidth] = useState(0);
+  const [revealed, setRevealed] = useState(false);
 
   const [{ r }, api] = useSpring(() => ({
     r: 0,
@@ -23,9 +24,10 @@ const Globe = () => {
     let phi = 0;
 
     const onResize = () => {
-      if (canvasRef.current) {
-        // @ts-ignore
-        const newWidth = canvasRef.current.offsetWidth;
+      // @ts-ignore
+      const outerWrapper = canvasRef.current?.closest("[data-globe-size]");
+      if (outerWrapper) {
+        const newWidth = outerWrapper.offsetWidth;
         setWidth(newWidth);
         if (globeRef.current) {
           // @ts-ignore
@@ -45,17 +47,17 @@ const Globe = () => {
       width: width * 2,
       height: width * 2,
       phi: 0,
-      theta: 0,
-      dark: 0,
-      diffuse: 0,
+      theta: 0.25,
+      dark: 1,
+      diffuse: 0.6,
       mapSamples: 33000,
-      mapBrightness: 12,
-      baseColor: [1, 1, 1],
-      markerColor: [255, 255, 255],
-      glowColor: [1, 1, 1],
+      mapBrightness: 9,
+      baseColor: [0.0078, 0, 0.3569], // #02005B
+      markerColor: [1, 1, 1],
+      glowColor: [0.0118, 0.3059, 1], // #034EFF
       markers: [],
-      offset: [0, width * 1.8],
-      scale: 1.2,
+      offset: [0, width * 0.42],
+      scale: 1.5,
       onRender: (state) => {
         if (!pointerInteracting.current) {
           phi += 0.003;
@@ -64,13 +66,6 @@ const Globe = () => {
         state.width = width * 2;
         state.height = width * 2;
       },
-    });
-
-    setTimeout(() => {
-      if (canvasRef.current) {
-        // @ts-ignore
-        canvasRef.current.style.opacity = "1";
-      }
     });
 
     return () => {
@@ -82,59 +77,69 @@ const Globe = () => {
     };
   }, [width, r]);
 
+  // Entrance reveal: separate one-time effect so it can't be re-triggered
+  // or overwritten by the resize-driven effect above re-rendering.
+  useEffect(() => {
+    const timer = setTimeout(() => setRevealed(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div data-aos="fade-up-sm" data-aos-delay="200" id="globeCanvas">
-      <canvas
-        ref={canvasRef}
-        onPointerDown={(e) => {
+    <canvas
+      id="globeCanvas"
+      ref={canvasRef}
+      onPointerDown={(e) => {
+        // @ts-ignore
+        pointerInteracting.current =
+          e.clientX - pointerInteractionMovement.current;
+        if (canvasRef.current) {
           // @ts-ignore
-          pointerInteracting.current =
-            e.clientX - pointerInteractionMovement.current;
-          if (canvasRef.current) {
-            // @ts-ignore
-            canvasRef.current.style.cursor = "grabbing";
-          }
-        }}
-        onPointerUp={() => {
-          pointerInteracting.current = null;
-          if (canvasRef.current) {
-            // @ts-ignore
-            canvasRef.current.style.cursor = "grab";
-          }
-        }}
-        onPointerOut={() => {
-          pointerInteracting.current = null;
-          if (canvasRef.current) {
-            // @ts-ignore
-            canvasRef.current.style.cursor = "grab";
-          }
-        }}
-        onMouseMove={(e) => {
-          if (pointerInteracting.current !== null) {
-            const delta = e.clientX - pointerInteracting.current;
-            pointerInteractionMovement.current = delta;
-            api.start({
-              r: delta / 200,
-            });
-          }
-        }}
-        onTouchMove={(e) => {
-          if (pointerInteracting.current !== null && e.touches[0]) {
-            const delta = e.touches[0].clientX - pointerInteracting.current;
-            pointerInteractionMovement.current = delta;
-            api.start({
-              r: delta / 100,
-            });
-          }
-        }}
-        style={{
-          cursor: "grab",
-          contain: "layout paint size",
-          opacity: 0,
-          transition: "opacity 1s ease",
-        }}
-      />
-    </div>
+          canvasRef.current.style.cursor = "grabbing";
+        }
+      }}
+      onPointerUp={() => {
+        pointerInteracting.current = null;
+        if (canvasRef.current) {
+          // @ts-ignore
+          canvasRef.current.style.cursor = "grab";
+        }
+      }}
+      onPointerOut={() => {
+        pointerInteracting.current = null;
+        if (canvasRef.current) {
+          // @ts-ignore
+          canvasRef.current.style.cursor = "grab";
+        }
+      }}
+      onMouseMove={(e) => {
+        if (pointerInteracting.current !== null) {
+          const delta = e.clientX - pointerInteracting.current;
+          pointerInteractionMovement.current = delta;
+          api.start({
+            r: delta / 200,
+          });
+        }
+      }}
+      onTouchMove={(e) => {
+        if (pointerInteracting.current !== null && e.touches[0]) {
+          const delta = e.touches[0].clientX - pointerInteracting.current;
+          pointerInteractionMovement.current = delta;
+          api.start({
+            r: delta / 100,
+          });
+        }
+      }}
+      style={{
+        width: `${width}px`,
+        height: `${width}px`,
+        cursor: "grab",
+        opacity: revealed ? 1 : 0,
+        transform: revealed ? "scale(1)" : "scale(0.85)",
+        filter: revealed ? "blur(0px)" : "blur(8px)",
+        transition:
+          "opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
+    />
   );
 };
 
