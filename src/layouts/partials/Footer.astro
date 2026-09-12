@@ -1,32 +1,27 @@
 ---
-import ImageMod from "@/components/ImageMod.astro";
 import menu from "@/config/menu.json";
 
 const { footer }: { footer: any } = menu;
 ---
 <footer class="pt-5 pb-0 bg-body">
   <div class="container">
+<!-- Top -->
+<div class="text-center mb-5">
+  <img
+    src="/images/JDH.svg"
+    alt="Jadh Al Ofoq"
+    class="w-64 h-auto mx-auto mb-0"
+  />
 
-    <!-- Top -->
-    <div class="text-center mb-8">
-      <ImageMod
-        class="w-44 mx-auto mb-4"
-        src="/images/logo.png"
-        alt="logo"
-        width={0}
-        height={0}
-      />
+  <p class="-mt-16 text-sm text-text-light tracking-wide">
+      حلول متكاملة للأعمال والشراكات والتشغيل
+    </span>
 
-    <p class="text-sm text-text-light tracking-wide">
-      <span class="block">
-        حلول متكاملة للأعمال والشراكات والتشغيل
-      </span>
-
-      <span class="block mt-1">
-        Integrated business solutions
-      </span>
-    </p>
-    </div>
+    <span class="block mt-1">
+      Integrated business solutions
+    </span>
+  </p>
+</div>
 
     <!-- Main Footer -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-black/10">

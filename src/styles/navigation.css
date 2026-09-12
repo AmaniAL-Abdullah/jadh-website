@@ -1,5 +1,5 @@
 .header {
-  @apply bg-body py-2;
+  @apply bg-body py-0;
 }
 
 /* navbar items */
@@ -9,9 +9,6 @@
 
 .navbar-brand {
   @apply text-xl font-semibold text-text-dark;
-  image {
-    @apply max-h-full max-w-full;
-  }
 }
 
 .navbar-nav {

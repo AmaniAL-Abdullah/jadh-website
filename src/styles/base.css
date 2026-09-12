@@ -1,22 +1,66 @@
+/*
+ * Mixed-language font stack: RH Zak is restricted (via unicode-range) to Arabic
+ * script code points, so it only ever claims Arabic characters. DM Sans carries
+ * no unicode-range, so it's the universal fallback for everything else (Latin,
+ * digits, punctuation) in the same font-family list below. This lets a single
+ * element/string mix both languages and have each character render in the
+ * correct font automatically, with no reliance on html[lang] or dir.
+ */
+@font-face {
+  font-family: 'RH Zak';
+  src: url('/fonts/RHZak/ArbFONTS-RH-Zak-Thin.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'RH Zak';
+  src: url('/fonts/RHZak/ArbFONTS-RH-Zak-Reg.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'RH Zak';
+  src: url('/fonts/RHZak/ArbFONTS-RH-Zak-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/DMSans_18pt-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/DMSans_18pt-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans/DMSans_18pt-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
 html {
   @apply text-base-sm md:text-base;
+  font-family: 'RH Zak', 'DM Sans', sans-serif;
 }
-
 body {
   @apply bg-body overflow-x-hidden text-base font-normal leading-relaxed text-text;
-
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   @apply font-bold leading-snug text-text-dark;
-
-  font-family: 'Cairo', sans-serif;
 }
 h1,
 h2,

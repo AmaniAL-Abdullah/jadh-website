@@ -4,10 +4,10 @@
     "base_url": "https://jadh.ai",
     "base_path": "/",
     "trailing_slash": false,
-    "favicon": "/images/favicon.png",
-    "logo": "/images/logo.png",
-    "logo_width": "130",
-    "logo_height": "60",
+    "favicon": "/images/favicon-v2.svg",
+    "logo": "/images/JDH.svg",
+    "logo_width": "100",
+    "logo_height": "100",
     "logo_text": "جادة الأفق"
   },
 

@@ -22,9 +22,11 @@ const { pathname } = Astro.url;
 ---
 
 <header class="header">
-  <nav class="navbar containe flex-row-reverse px-4 ">
+  <nav class="navbar w-full flex-row-reverse px-4 lg:px-6">
     <!-- logo -->
-    <div class="order-0 ">
+    <div class="order-0 flex items-start h-24 lg:h-24 -mt-9 lg:-mt-18">
+
+
       <Logo />
     </div>
     
@@ -32,9 +34,9 @@ const { pathname } = Astro.url;
     
     <input id="nav-toggle" type="checkbox" class="hidden" />
     <label
-      for="nav-toggle"
-      class="order-3 cursor-pointer flex items-center lg:hidden text-text-dark lg:order-1"
-    >
+  for="nav-toggle"
+  class="order-3 cursor-pointer flex items-center -mt-6 lg:hidden text-text-dark lg:order-1"
+>
       <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
 
         <title>Menu Open</title>
@@ -50,7 +52,7 @@ const { pathname } = Astro.url;
     
     <!-- /navbar toggler -->
     
-    <ul id="nav-menu" class="navbar-nav flex-row-reverse">
+    <ul id="nav-menu" class="navbar-nav flex-row-reverse lg:-mt-4">
       {
         main.map((menu) => (
           <>

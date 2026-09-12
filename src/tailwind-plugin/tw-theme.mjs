@@ -1,19 +1,6 @@
 import plugin from "tailwindcss/plugin";
 import themeConfig from "../config/theme.json";
 
-// Helper to extract a clean font name.
-const findFont = (fontStr) =>
-  fontStr.replace(/\+/g, " ").replace(/:[^:]+/g, "");
-
-// Set font families dynamically, filtering out 'type' keys
-const fontFamilies = Object.entries(themeConfig.fonts.font_family)
-  .filter(([key]) => !key.includes("type"))
-  .reduce((acc, [key, font]) => {
-    acc[key] =
-      `${findFont(font)}, ${themeConfig.fonts.font_family[`${key}_type`] || "sans-serif"}`;
-    return acc;
-  }, {});
-
 const defaultColorGroups = [
   { colors: themeConfig.colors.default.theme_color, prefix: "" },
   { colors: themeConfig.colors.default.text_color, prefix: "" },
@@ -66,9 +53,6 @@ const fontVars = {};
 Object.entries(fontSizes).forEach(([key, value]) => {
   fontVars[`--text-${key}`] = value;
 });
-Object.entries(fontFamilies).forEach(([key, font]) => {
-  fontVars[`--font-${key}`] = font;
-});
 
 const baseVars = { ...fontVars, ...defaultVars };
 
@@ -90,9 +74,6 @@ module.exports = plugin.withOptions(() => {
     });
 
     const fontUtils = {};
-    Object.keys(fontFamilies).forEach((key) => {
-      fontUtils[`.font-${key}`] = { fontFamily: `var(--font-${key})` };
-    });
     Object.keys(fontSizes).forEach((key) => {
       fontUtils[`.text-${key}`] = { fontSize: `var(--text-${key})` };
     });

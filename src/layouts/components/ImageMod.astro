@@ -6,8 +6,8 @@ import { Image } from "astro:assets";
 interface Props {
   src: string;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   loading?: "eager" | "lazy" | null | undefined;
   decoding?: "async" | "auto" | "sync" | null | undefined;
   format?: "auto" | "avif" | "jpeg" | "png" | "svg" | "webp";

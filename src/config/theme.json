@@ -17,14 +17,6 @@
     }
   },
   "fonts": {
-    "font_family": {
-      "primary": "Cairo",
-      "primary_type": "sans-serif",
-
-      "secondary": "IBM Plex Sans Arabic",
-      "secondary_type": "sans-serif"
-    },
-
     "font_size": {
       "base": "16",
       "scale": "1.185"

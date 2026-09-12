@@ -31,7 +31,7 @@
       @apply mr-3;
     }
     p {
-      @apply font-secondary text-xl font-semibold text-text-dark;
+      @apply text-xl font-semibold text-text-dark;
     }
   }
   .notice-body {
