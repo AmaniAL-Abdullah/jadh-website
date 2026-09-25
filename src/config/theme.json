@@ -12,7 +12,9 @@
       "text_color": {
         "text": "#3b3b3b",
         "text-dark": "#0A0A0A",
-        "text-light": "#0A0A0A99"
+        "text-light": "#0A0A0A99",
+        "muted-heading": "#A8AFC0",
+        "muted-body": "#717D99"
       }
     }
   },

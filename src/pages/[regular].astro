@@ -3,6 +3,7 @@ import Base from "@/layouts/Base.astro";
 import { getSinglePage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import { render } from "astro:content";
+import Button from "@/components/Button.astro";
 
 export const prerender = true;
 
@@ -41,9 +42,7 @@ const { Content } = await render(page);
         </div>
         {
           button?.enable && (
-            <a href={button?.link} class="btn btn-primary">
-              {button?.label}
-            </a>
+            <Button href={button?.link} label={button?.label ?? ""} variant="blue" />
           )
         }
       </div>

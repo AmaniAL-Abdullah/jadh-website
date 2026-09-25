@@ -3,112 +3,141 @@ import menu from "@/config/menu.json";
 
 const { footer }: { footer: any } = menu;
 ---
-<footer class="pt-5 pb-0 bg-body">
-  <div class="container">
-<!-- Top -->
-<div class="text-center mb-5">
-  <img
-    src="/images/JDH.svg"
-    alt="Jadh Al Ofoq"
-    class="w-64 h-auto mx-auto mb-0"
-  />
+<!--
+  Structural reference: Daylight Computer Co.'s footer (spacious horizontal
+  composition, large confident logo area, simple nav groups, socials
+  integrated naturally, dark atmosphere with a subtle textured glow).
+  Translated into Jadat's identity, not copied: logo anchors the RIGHT edge
+  as the RTL starting point, the glow is restrained brand blue instead of
+  a bold orange wash, and there is no email signup or oversized wordmark.
+-->
+<footer class="relative overflow-hidden bg-[#0A0A0A] pt-6 pb-8 md:pt-9 lg:pt-12 text-white">
+  <!-- Restrained atmospheric texture: a soft blue glow behind the logo,
+       plus a fine dot texture that fades out from the same point. Static
+       CSS only -- no canvas/JS needed for something this subtle. -->
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute -right-24 -top-24 h-[460px] w-[560px]"
+      style="background: radial-gradient(circle, rgba(3,78,255,0.16) 0%, rgba(2,0,91,0.12) 45%, transparent 72%); filter: blur(60px);"
+    />
+    <div
+      class="absolute inset-0 opacity-[0.12]"
+      style="background-image: radial-gradient(rgba(255,255,255,0.7) 0.6px, transparent 0.6px); background-size: 16px 16px; -webkit-mask-image: radial-gradient(560px 360px at 88% 8%, black, transparent 70%); mask-image: radial-gradient(560px 360px at 88% 8%, black, transparent 70%);"
+    />
+  </div>
 
-  <p class="-mt-16 text-sm text-text-light tracking-wide">
-      حلول متكاملة للأعمال والشراكات والتشغيل
-    </span>
+  <div class="container relative z-10">
+    <!-- Main band: logo anchors the right (RTL start), groups flow outward
+         to its left -- one spacious horizontal composition, not a stacked
+         logo-then-grid layout. -->
+    <div
+      class="flex flex-col gap-12 border-b border-white/10 pb-14 lg:flex-row lg:items-start lg:justify-between lg:gap-10"
+      dir="rtl"
+    >
+      <!-- Brand -->
+      <div class="flex shrink-0 items-start gap-3">
+        <img src="/images/JDH-Blue-.svg" alt="Jadh Al Ofoq" class="mt-1 h-8 w-8 object-contain" />
+        <div>
+          <div class="text-2xl font-bold tracking-tight text-white">جادة الأفق</div>
+          <div class="mt-0.5 text-xs uppercase tracking-[0.2em] text-muted-heading">Jadh Al Ofoq</div>
+          <p class="mt-4 text-sm leading-relaxed text-[#E2E7F2]/70">
+            حلول متكاملة للأعمال والتشغيل
+            <span class="mt-1 block text-muted-heading">Integrated business solutions</span>
+          </p>
+        </div>
+      </div>
 
-    <span class="block mt-1">
-      Integrated business solutions
-    </span>
-  </p>
-</div>
+      <!-- Groups -->
+      <div class="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:gap-x-16">
+        <div class="text-right">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">روابط</h6>
+          <ul class="flex flex-col gap-2.5 text-[#E2E7F2]">
+            <li><a href="/services" class="transition hover:text-white">الخدمات</a></li>
+            <li><a href="/about" class="transition hover:text-white">من نحن</a></li>
+            <li><a href="/" class="transition hover:text-white">الرئيسية</a></li>
+          </ul>
+        </div>
 
-    <!-- Main Footer -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-black/10">
-
-            <!-- Contact -->
-          <div class="text-center order-3 md:order-1">
-            <h6 class="mb-4 text-black font-semibold">الموقع</h6>
-
-            <div class="flex flex-col gap-0.5">
-              <a
-                href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
-                target="_blank"
-                class="text-text-light hover:text-black transition"
-              >
-                الرياض، السعودية
-              </a>
-
-              <a
-                href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
-                target="_blank"
-                class="text-text-light hover:text-black transition"
-              >
-                بيشة، السعودية
-              </a>
-            </div>
+        <div class="text-right">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">الموقع</h6>
+          <div class="flex flex-col gap-2.5 text-[#E2E7F2]">
+            <a
+              href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
+              target="_blank"
+              class="transition hover:text-white"
+            >
+              الرياض، السعودية
+            </a>
+            <a
+              href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
+              target="_blank"
+              class="transition hover:text-white"
+            >
+              بيشة، السعودية
+            </a>
           </div>
-      <!-- Links -->
+        </div>
 
-
-      <!-- Social -->
-      <div class="text-center order-1 md:order-2">
-        <h6 class="mb-4 text-black font-semibold">تواصل</h6>
-
-        <div class="flex justify-center gap-5 mb-2">
-
-          <!-- X -->
-          <a href="https://x.com/jadhksa?s=21" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
-              <path d="m18.901 1.153-5.61 6.41L8.44 1.153H1.8l8.173 9.343L1.8 19.847h2.708l6.667-7.62 5.255 7.62H22.2l-8.598-9.826 7.998-8.868H18.9Z"/>
-            </svg>
-          </a>
-
-          <!-- LinkedIn -->
-          <a href="https://www.linkedin.com/in/meshal-alharthi-83a1b418b/m" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
-              <path d="M4.98 3.5C4.98 4.604 4.104 5.5 3 5.5s-1.98-.896-1.98-2S1.896 1.5 3 1.5s1.98.896 1.98 2ZM1 8h4v12H1V8Zm7 0h3.6v1.71h.05c.5-.95 1.72-1.95 3.54-1.95C19 7.76 20 10.08 20 13.08V20h-4v-6.08c0-1.45-.03-3.32-2.02-3.32-2.02 0-2.33 1.58-2.33 3.21V20H8V8Z"/>
-            </svg>
-          </a>
-
-          <!-- Email -->
-          <a href="mailto:info@jadh.sa" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.24-8 5-8-5V6l8 5 8-5v2.24Z"/>
-            </svg>
-          </a>
-
-          <!-- WhatsApp -->
-          <a href="https://wa.me/966500000000" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
-              <path d="M12.04 2C6.52 2 2 6.42 2 11.88c0 1.75.46 3.45 1.33 4.95L2 22l5.3-1.38a10.1 10.1 0 0 0 4.74 1.2h.01C17.57 21.82 22 17.4 22 11.94 22 6.48 17.57 2 12.04 2Zm0 17.94h-.01a8.4 8.4 0 0 1-4.27-1.17l-.3-.18-3.14.82.84-3.06-.2-.32a8.28 8.28 0 0 1-1.28-4.39c0-4.6 3.75-8.35 8.36-8.35a8.3 8.3 0 0 1 5.91 2.45 8.26 8.26 0 0 1 2.44 5.9c0 4.6-3.75 8.35-8.35 8.35Z"/>
-            </svg>
+        <div class="text-right">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">تواصل</h6>
+          <div class="mb-3 flex items-center justify-end gap-3">
+            <!-- X -->
+            <a
+              href="https://x.com/jadhksa?s=21"
+              target="_blank"
+              aria-label="X (Twitter)"
+              class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
+            >
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <!-- LinkedIn -->
+            <a
+              href="https://www.linkedin.com/in/meshal-alharthi-83a1b418b/m"
+              target="_blank"
+              aria-label="LinkedIn"
+              class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
+            >
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+                <circle cx="4.5" cy="4.75" r="2.35"/>
+                <rect x="2.6" y="9" width="3.8" height="12" rx="0.4"/>
+                <path d="M9.6 21V9h3.8v1.9c1-1.5 2.7-2.4 4.7-2.4 3.8 0 6.5 2.5 6.5 7.4V21h-3.8v-8.6c0-2.3-1.1-3.7-3.1-3.7-1.6 0-2.7 1-3.1 2-.1.3-.2.8-.2 1.3V21z"/>
+              </svg>
+            </a>
+            <!-- Email -->
+            <a
+              href="mailto:info@jadh.sa"
+              target="_blank"
+              aria-label="Email"
+              class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
+            >
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+                <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-9.75 5.85a1.5 1.5 0 0 1-1.5 0L1.5 8.67ZM22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l10.5 6.3 10.5-6.3Z"/>
+              </svg>
+            </a>
+            <!-- WhatsApp -->
+            <a
+              href="https://wa.me/966500000000"
+              target="_blank"
+              aria-label="WhatsApp"
+              class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
+            >
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+              </svg>
+            </a>
+          </div>
+          <a href="tel:0176227083" class="text-[#E2E7F2] transition hover:text-white">
+            0176227083
           </a>
         </div>
-                <a
-          href="tel:0176227083"
-          class="text-text-light hover:text-black transition"
-        >
-          0176227083
-        </a>
       </div>
-
-      <div class="text-center order-2 md:order-3">
-        <h6 class="mb-4 text-black font-semibold">روابط</h6>
-
-        <ul class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-text-light max-w-[220px] mx-auto">
-          <li><a href="/services" class="hover:text-black transition">الخدمات</a></li>
-          <li><a href="/about" class="hover:text-black transition">من نحن</a></li>
-          <li><a href="/" class="hover:text-black transition">الرئيسية</a></li>
-        </ul>
-      </div>
-
     </div>
 
     <!-- Bottom -->
-    <div class="pt-1 mt-1 border-t border-black/10 text-center text-sm text-text-light">
-      © 2026 Jadh Al Ofoq | جادة الأفق 
+    <div class="pt-6 text-center text-sm text-muted-heading">
+      © 2026 Jadh Al Ofoq | جادة الأفق
     </div>
-
   </div>
 </footer>

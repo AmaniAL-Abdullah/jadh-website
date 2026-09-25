@@ -1,5 +1,4 @@
 ---
-import ImageMod from "@/components/ImageMod.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import type { CollectionEntry } from "astro:content";
 
@@ -8,42 +7,101 @@ interface Props {
 }
 
 const { testimonials } = Astro.props;
+
+// Same "Arabic <br> English" convention used across the rest of the site --
+// split at render time so each language can get its own colour.
+const splitBilingual = (s: string) => {
+  const parts = (s ?? "").split("<br>");
+  return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
+};
 ---
 
-<div class="row g-4 justify-center"  dir="rtl" >
-  {
-    testimonials.map((t, i: number) => (
-      <div class="sm:col-6 lg:col-4" data-aos="fade-up-sm" data-aos-delay={(i % 3) * 100}>
-        <div class="border border-border/80 p-6 rounded-xl h-full text-right">
-          <div class="pb-3 flex justify-end text-white/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="none">
-              <path
-                fill="currentColor"
-                d="M18.75 15C12.562 15 7.5 20.063 7.5 26.25V45h18.75V26.25h-15c0-4.16 3.34-7.5 7.5-7.5V15zM45 15c-6.188 0-11.25 5.063-11.25 11.25V45H52.5V26.25h-15c0-4.16 3.34-7.5 7.5-7.5V15zM11.25 30H22.5v11.25H11.25V30zm26.25 0h11.25v11.25H37.5V30z"
-                opacity=".4"
-              />
-            </svg>
-          </div>
-          <p class="pb-12" set:html={markdownify(t.content)} />
-          <div class="flex items-center gap-4 w-full">
-            <img
-              src={t.avatar}
-              alt="client image"
-              width="56"
-              height="56"
-              class="w-14 h-14 rounded-full object-cover shrink-0 block"
-            />
+<!--
+  Five editorial testimonial cards, all visible at once (no carousel).
+  Desktop: 2 columns via flex-wrap + justify-center, so the 5th (odd) card
+  centers itself on its own row at the same width as the other four -- a
+  plain CSS grid can't do this without spanning/stretching it, which is
+  exactly what we don't want.
 
-            <div class="text-right">
-              <p class="text-lg pb-1" set:html={markdownify(t.name)} />
-              <p
-                class="text-sm text-white/80"
-                set:html={markdownify(t.designation)}
+  Image side alternates per card on desktop only, via `order` utilities --
+  DOM order is always [image, content] so mobile stacking (image always on
+  top) never depends on the alternation, keeping RTL/mobile robust.
+-->
+<div class="flex flex-wrap justify-center gap-6 lg:gap-8" dir="rtl">
+  {
+    testimonials.map((t, i: number) => {
+      const contentFirstOnDesktop = i % 2 === 1;
+      const cleanName = typeof t.name === "string" ? t.name.replace(/<[^>]+>/g, "") : "client";
+      return (
+        <div class="w-full lg:w-[calc(50%-1rem)]">
+          <div
+            class="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#02005B]/8 bg-white shadow-[0_2px_24px_rgba(2,0,91,0.05)] transition-all duration-300 hover:border-[#034EFF]/25 hover:shadow-[0_8px_32px_rgba(2,0,91,0.09)] sm:flex-row"
+            data-aos="fade-up-sm"
+            data-aos-delay={(i % 2) * 100}
+          >
+            <div
+              class:list={[
+                "relative h-52 max-sm:h-32 w-full shrink-0 overflow-hidden sm:h-auto sm:w-[40%]",
+                contentFirstOnDesktop && "sm:order-2",
+              ]}
+            >
+              <img
+                src={t.avatar}
+                alt={cleanName}
+                class="h-full w-full object-cover object-top motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.04]"
               />
+            </div>
+
+            <div
+              class:list={[
+                "flex flex-1 flex-col px-6 py-6 max-sm:px-5 max-sm:py-4 text-right sm:px-7 sm:py-7",
+                contentFirstOnDesktop && "sm:order-1",
+              ]}
+            >
+              <svg
+                class="mb-3 max-sm:mb-2 h-7 w-7 text-[#034EFF]/25"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M9 7C6.24 7 4 9.24 4 12v5h5v-5H6.5C6.5 10.62 7.62 9.5 9 9.5V7zm10 0c-2.76 0-5 2.24-5 5v5h5v-5h-2.5c0-2.38 1.12-3.5 2.5-3.5V7z" />
+              </svg>
+
+              <p class="text-[15px] leading-[1.85] max-sm:leading-[1.6] sm:text-base">
+                <span class="text-black" set:html={markdownify(splitBilingual(t.content).ar)} />
+                {splitBilingual(t.content).en && (
+                  <span
+                    class="mt-1 block text-muted-body"
+                    set:html={markdownify(splitBilingual(t.content).en)}
+                  />
+                )}
+              </p>
+
+              <div class="mt-6 max-sm:mt-3 flex items-center gap-4 border-t border-[#02005B]/8 pt-5 max-sm:pt-3">
+                <img
+                  src={t.avatar}
+                  alt=""
+                  width="48"
+                  height="48"
+                  class="block h-12 w-12 shrink-0 rounded-full object-cover"
+                />
+                <div class="text-right">
+                  <p class="text-base font-semibold text-black" set:html={markdownify(t.name)} />
+                  <p class="text-sm">
+                    <span class="text-black" set:html={markdownify(splitBilingual(t.designation).ar)} />
+                    {splitBilingual(t.designation).en && (
+                      <span
+                        class="block text-muted-body"
+                        set:html={markdownify(splitBilingual(t.designation).en)}
+                      />
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    ))
+      );
+    })
   }
 </div>

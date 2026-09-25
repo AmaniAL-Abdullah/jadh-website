@@ -18,6 +18,7 @@ const aboutCollection = defineCollection({
   }),
   schema: z.object({
     ...commonFields,
+    content_1: z.string().optional(),
     button: z.object({
       enable: z.boolean(),
       label: z.string(),

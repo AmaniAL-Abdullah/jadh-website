@@ -1,7 +1,7 @@
     <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
 
     <!-- Ring 1 -->
-    <g fill="black">
+    <g fill="#004EFF">
         <circle cx="256" cy="40" r="10"/>
         <circle cx="320" cy="52" r="10"/>
         <circle cx="380" cy="84" r="10"/>
@@ -25,7 +25,7 @@
     </g>
 
     <!-- Ring 2 -->
-    <g fill="black">
+    <g fill="#004EFF">
         <circle cx="256" cy="84" r="8"/>
         <circle cx="308" cy="96" r="8"/>
         <circle cx="352" cy="120" r="8"/>
@@ -49,7 +49,7 @@
     </g>
 
     <!-- Ring 3 -->
-    <g fill="black">
+    <g fill="#004EFF">
         <circle cx="256" cy="128" r="6"/>
         <circle cx="296" cy="136" r="6"/>
         <circle cx="336" cy="160" r="6"/>
@@ -72,7 +72,7 @@
     </g>
 
     <!-- Inner Ring -->
-    <g fill="black">
+    <g fill="#004EFF">
         <circle cx="256" cy="176" r="4"/>
         <circle cx="288" cy="188" r="4"/>
         <circle cx="312" cy="212" r="4"/>

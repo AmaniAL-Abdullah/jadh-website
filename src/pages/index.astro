@@ -7,8 +7,9 @@ import Testimonial from "@/partials/Testimonial.astro";
 import { Icon } from "astro-icon/components";
 import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
 import BlogCard from "@/components/BlogCard.astro";
-import Globe from "@/helpers/Globe";
+import ParticleGlobe from "@/helpers/ParticleGlobe";
 import ServiceSlider from "@/components/homepage/ServiceSlider.astro";
+import Button from "@/components/Button.astro";
 
 const homepage = await getListPage("homepage", "-index");
 const { banner, service, feature, about } = homepage.data;
@@ -16,180 +17,329 @@ const brandLogos = [...new Set(banner.brands)].map((src) =>
   src.replace("/company-logo/", "/company-logo/trimmed/"),
 );
 
+// The about content/content_2 fields follow the site-wide "Arabic <br>
+// English" convention as one plain string (no existing tags separating the
+// two languages). Splitting here -- not editing the data -- lets each
+// language get its own colour without changing a single word of the text.
+const splitBilingual = (s: string) => {
+  const parts = s.split("<br>");
+  return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
+};
+const aboutContent = splitBilingual(about.content);
+const aboutContent2 = splitBilingual(about.content_2);
+const serviceTitle = splitBilingual(service.title);
+const featureContent = splitBilingual(feature.content);
+
 const testimonial = await getListPage("testimonials", "testimonial");
+const reviewTitle = splitBilingual(testimonial.data.homepage_title);
+const reviewContent = splitBilingual(testimonial.data.content);
 const postIndex = await getListPage("blog", "-index");
 const { homepage_title, homepage_description } = postIndex.data;
 const posts = await getSinglePage("blog");
 ---
 
 <Base>
-<!-- Banner -->
-<section class="relative overflow-hidden bg-gradient-to-b from-[#02005B] via-[#034EFF] to-white pt-20 pb-0 md:pt-28">
-  <div class="container relative z-10">
-    <div class="row justify-center row gy-3">
+<!-- Banner: the video is the actual hero background (untouched); the
+     section is sized to the viewport (min-height: 100svh, see
+     .hero-gradient below) instead of stacking fixed padding, so it fills
+     the screen without ever running longer than it and forcing a scroll
+     before About even starts. Text + globe center as one flex group
+     inside that box with a responsive gap between them, rather than a
+     fixed margin, so the same markup adapts cleanly from short mobile
+     viewports up to large desktop ones. -->
+<section class="hero-gradient relative flex flex-col overflow-hidden pt-16 pb-10 md:pt-20 md:pb-12 lg:pt-28 lg:pb-16">
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    class="absolute inset-0 z-0 h-full w-full object-cover"
+  >
+    <source src="/videos/hero-bg.mp4" type="video/mp4" />
+  </video>
+  <div class="container relative z-10 flex flex-1 flex-col items-center justify-center">
+    <div class="mx-auto max-w-xl text-center lg:max-w-2xl">
+      <h1
+        class="leading-[1.05] tracking-[-0.03em]"
+        data-aos="fade-up-sm"
+        data-aos-delay="50"
+        set:html={markdownify(banner.title)}
+      />
 
-      <div class="lg:col-8 mx-auto">
-        <h1
-          class="text-center leading-[1.05] tracking-[-0.03em]"
-          data-aos="fade-up-sm"
-          data-aos-delay="50"
-          set:html={markdownify(banner.title)}
-        />
-      </div>
-
-      <div class="lg:col-7 mx-auto">
-        <p
-          class="pb-8 text-center text-[17px] leading-[1.9] font-medium text-white/70"
-          data-aos="fade-up-sm"
-          data-aos-delay="100"
-          set:html={markdownify(banner.content)}
-        />
-      </div>
+      {
+        banner.content && (
+          <p
+            class="pt-5 text-[17px] leading-[1.9] font-medium text-white/70"
+            data-aos="fade-up-sm"
+            data-aos-delay="100"
+            set:html={markdownify(banner.content)}
+          />
+        )
+      }
 
       {
         banner.button.enable && (
-          <div
-            class="inline-block text-center"
-            data-aos="fade-up-sm"
-            data-aos-delay="150"
-          >
-            <a class="btn btn-secondary" href={banner.button.link}>
-              {banner.button.label}
-            </a>
+          <div class="inline-block pt-6" data-aos="fade-up-sm" data-aos-delay="150">
+            <Button href={banner.button.link} label={banner.button.label} variant="white" />
           </div>
         )
       }
     </div>
 
-    <div data-globe-size class="relative mx-auto flex h-[220px] w-full max-w-[900px] items-start justify-center overflow-hidden md:h-[340px] lg:h-[420px]">
-      <Globe client:only="react" />
+    <!-- Globe: a small, fully-visible floating object, not a cropped peek --
+         wrapper is a true square (height == width, which is what actually
+         drives the sphere's diameter in ParticleGlobe) so the whole circle
+         renders with clear space on every side. Gap from the text above is
+         now the parent's own responsive margin-top, not a fixed offset. -->
+    <div
+      data-globe-size
+      class="relative z-0 mt-10 flex h-[150px] w-[150px] items-center justify-center md:mt-14 md:h-[210px] md:w-[210px] lg:mt-12 lg:h-[260px] lg:w-[260px]"
+    >
+      <ParticleGlobe client:only="react" />
     </div>
   </div>
 </section>
+
+<style>
+  /* Hero sizing: fills the viewport without ever exceeding it (so
+     scrolling only ever starts at About, never mid-hero) using
+     min-height rather than a fixed height, so genuinely tall content
+     still isn't cropped -- it would simply grow past 100svh instead of
+     overflowing a hard cap. `svh` (small viewport height) is the
+     deliberate choice over plain `vh`: on mobile, `vh` includes space the
+     browser's own address bar can cover/uncover, which is exactly what
+     causes a hero that "should" fit to still trigger a few extra pixels
+     of scroll; `svh` accounts for that. Plain `vh` first as a fallback
+     for the handful of browsers without `svh` support. flex/flex-col
+     (set as Tailwind classes on the section itself) + flex-1 + justify-
+     center on the inner container centers the text+globe group inside
+     this box with a responsive gap, instead of fixed padding stacking up
+     to a height nothing was actually checking against the viewport. */
+  .hero-gradient {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    background-color: #071033;
+  }
+
+  /* Dissolves the video into the About section's own background
+     (#F6F7F9) -- contained inside the hero's own box (bottom: 0, never
+     bled past it -- see the note above about why that matters for the
+     scrollbar), but now sized and eased so the transition itself has no
+     perceptible edge anywhere inside it:
+       - Tall: 78-85% of the hero's own height, so the fade is already
+         present well above the globe, not just a strip at the very
+         bottom.
+       - Eased with a smoothstep curve (11 stops following 3t^2-2t^3
+         rather than a plain linear ramp), which is zero-slope at BOTH
+         ends. A linear or even "ease-ish" ramp still has some minimum
+         rate of change at its start/end, and that's exactly what a
+         human eye reads as an edge -- smoothstep's flat tangents there
+         mean there is no single point where the rate of change visibly
+         picks up or stops, so nothing in the fade itself reads as a
+         line, only as air gradually thickening into the page. */
+  .hero-gradient::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 85%;
+    background: linear-gradient(
+  to bottom,
+  rgba(246, 247, 249, 0) 0%,
+  rgba(246, 247, 249, 0.02) 15%,
+  rgba(246, 247, 249, 0.06) 30%,
+  rgba(246, 247, 249, 0.14) 45%,
+  rgba(246, 247, 249, 0.28) 60%,
+  rgba(246, 247, 249, 0.48) 72%,
+  rgba(246, 247, 249, 0.70) 84%,
+  rgba(246, 247, 249, 0.90) 94%,
+  #f6f7f9 100%
+);
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero-gradient::after {
+      height: 80%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-gradient::after {
+      height: 50%;
+    }
+  }
+</style>
 <!-- Banner -->
 <!-- about us -->
-{
-  testimonial.data.enable && (
-    <section class="relative pt-9 pb-12 lg:pb-16 bg-[#040303] bg-no-repeat overflow-hidden">
-      
-      <div
-        class="absolute inset-0 pointer-events-none opacity-[0.18] md:opacity-[0.90]"
-      >
+<section class="relative overflow-hidden bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
+  <!-- Desktop/XL width matches the shared .container's rhythm (max-w-[1160px],
+       padding dropping to 0 at 2xl) so this composition's outer left/right
+       edges line up with the Services section below -- mobile/tablet keep
+       their own px-5/sm:px-10 padding against the wider base max-width,
+       unaffected since viewport is already narrower than either cap there. -->
+  <div class="relative z-10 mx-auto max-w-[1600px] lg:max-w-[1160px] px-5 sm:px-10 2xl:px-0">
+    <!-- Mobile/tablet: image and content panel share one flush rounded-2xl
+         shape (connected, no gap), same as before -- a simple grid stack.
+         Desktop: both sides become absolutely positioned against this
+         container (each sized/pinned to its own physical edge) instead of
+         grid columns, which lets the content panel's width run past the
+         44/56 split -- its right edge still pinned to the container's
+         right, but its left edge extends ~56px further left than the
+         split, over the image, with a large soft radius there. -->
+    <div
+      class="grid overflow-hidden rounded-2xl lg:relative lg:h-[500px] lg:overflow-visible xl:h-[560px]"
+      data-aos="fade-up-sm"
+    >
+      <!-- Image: fixed on the physical left, regardless of RTL text flow --
+           this is a deliberate side, not a language-direction detail. A
+           short, wide block at every breakpoint (never grid-stretched into
+           a tall column) keeps the crop landscape instead of portrait. Own
+           overflow-hidden/rounding so it still clips/rounds once the parent
+           stops doing that for it at lg. -->
+      <div class="relative h-[240px] overflow-hidden rounded-2xl sm:h-80 md:h-[400px] lg:absolute lg:inset-y-0 lg:left-0 lg:h-full lg:w-[44%]">
         <img
-          src="/images/bg-ab.svg"
-          alt=""
-          class="w-full h-full object-cover"
+          src={about.image}
+          alt="JADH Al Ofoq office"
+          class="h-full w-full object-cover"
+          style="object-position: 78% 38%;"
         />
       </div>
 
-      <div class="container relative z-10 text-white">
-        <div class="pt-8 lg:pt-10 !border-none">
-          <div class="items-center justify-center row md:justify-between gy-5 gx-4 xl:gx-5 flex-row-reverse">
-            
-            <div class="col-12 md:col-5 order-1 md:order-1 text-right pr-4">
-              <div class="flex flex-col gap-6">
-                <h2
-                  class="text-white"
-                  data-aos="fade-up-sm"
-                  set:html={markdownify(about.title)}
-                />
-
-                <p
-                  class="text-light/80"
-                  data-aos="fade-up-sm"
-                  set:html={markdownify(about.content)}
-                />
-
-                <p
-                  class="text-white"
-                  data-aos="fade-up-sm"
-                  set:html={markdownify(about.content_2)}
-                />
-
-                {about.button.enable && (
-                  <div class="inline-block" data-aos="fade-up-sm">
-                    <a
-                      href={about.button.link}
-                      class="btn btn-outline-secondary"
-                      set:html={about.button.label}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div class="col-12 md:col-6 order-2 md:order-2">
-              <div
-                class="flex items-center justify-center mt-8 md:mt-0"
-                data-aos="fade-up-sm"
-              >
-                  <ImageMod
-                    class="mx-auto w-full max-w-[900px] md:scale-125 scale-100"
-                    src="/images/pattern-2.png"
-                    width={900}
-                    height={900}
-                    alt={about.title}
-                    format="png"
-                  />
-              </div>
-            </div>
-
+      <!-- Content: physical right. Mobile/tablet stays flush against the
+           image (no radius of its own -- the shared parent rounding above
+           handles it). From lg it's pinned to the container's right edge
+           but made wider than the 56% split by exactly 56px (unchanged),
+           so its left edge overlaps the image by the same amount as
+           before; large radius + z-10 so it paints above the photo
+           there. -->
+      <div class="relative z-10 flex flex-col justify-center overflow-hidden bg-white px-[30px] py-11 sm:px-12 sm:py-12 lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:w-[calc(56%+3.5rem)] lg:rounded-[56px] lg:py-0 lg:pl-20 lg:pr-[60px]">
+        <div class="relative mx-auto w-full max-w-md text-right" dir="rtl">
+          <div class="mb-3 flex items-center justify-start gap-3" data-aos="fade-up-sm">
+            <span class="h-px w-10 bg-[#034EFF]"></span>
+            <span class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading">
+              About Jadh
+            </span>
           </div>
+
+          <h2
+            class="text-[26px] font-bold leading-tight text-black md:text-[32px] lg:text-[36px] xl:text-[40px] [&_strong]:font-bold [&_strong]:text-muted-heading"
+            data-aos="fade-up-sm"
+            data-aos-delay="50"
+            set:html={markdownify(about.title)}
+          />
+
+          <p
+            class="mt-4 text-[14px] leading-[1.55] md:text-[15px] xl:leading-[1.7]"
+            data-aos="fade-up-sm"
+            data-aos-delay="100"
+          >
+            <span class="text-black" set:html={markdownify(aboutContent.ar)} />
+            <br />
+            <span class="text-muted-body" set:html={markdownify(aboutContent.en)} />
+          </p>
+
+          <p
+            class="mt-2 text-[14px] leading-[1.55] md:text-[15px] xl:leading-[1.7]"
+            data-aos="fade-up-sm"
+            data-aos-delay="150"
+          >
+            <span class="text-black" set:html={markdownify(aboutContent2.ar)} />
+            <br />
+            <span class="text-muted-body" set:html={markdownify(aboutContent2.en)} />
+          </p>
+
+          {about.button.enable && (
+            <div class="mt-4 inline-block xl:mt-6" data-aos="fade-up-sm" data-aos-delay="200">
+              <Button
+                href={about.button.link}
+                label={about.button.label}
+                variant="blue"
+                size="sm-lg"
+                dir="ltr"
+              />
+            </div>
+          )}
         </div>
       </div>
-
-    </section>
-  )
-}
+    </div>
+  </div>
+</section>
 <!-- about us -->
 
 
   <!-- service -->
-  <section class="pb-0 section">
+  <section class="bg-white py-6 md:py-9 lg:py-12">
     <div class="container">
-      <h2
-        class="pb-8"
-        data-aos="fade-right-sm"
-        set:html={markdownify(service.title)}
-      />
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="mb-12 flex items-end justify-between gap-8 lg:mb-14" dir="rtl">
+        <h2 class="max-w-2xl text-black lg:max-w-3xl" data-aos="fade-up-sm">
+          <span class="block text-[26px] font-bold leading-tight text-black md:whitespace-nowrap md:text-[34px] lg:text-[42px]">
+            {serviceTitle.ar}
+          </span>
+          <span class="mt-2 block text-lg font-medium text-muted-heading md:text-xl lg:text-2xl">
+            {serviceTitle.en}
+          </span>
+        </h2>
+      </div>
+      <div class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" dir="rtl">
         {
-          service.services.map((s, i: number) => (
-            <div
-              class="p-8 border border-border rounded-xl"
-              data-aos="fade-right-sm"
-              data-aos-delay={i * 100}
-            >
-              <Icon name={s.image} class="w-16 h-16 mb-10 lg:mb-24" />
-              <h3 class="mb-4 text-2xl" set:html={markdownify(s.title)} />
-              <p class="mb-4" set:html={markdownify(s.content)} />
-              {s.button.enable && (
-                <a
-                  href={s.button.link}
-                  class="flex items-center gap-1 transition duration-300 text-[#7a7a7a] hover:opacity-80"
-                >
-                  معرفة المزيد  <span class="sr-only ">Details</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right"
+          service.services.map((s, i: number) => {
+            const t = splitBilingual(s.title);
+            const c = splitBilingual(s.content);
+            return (
+              <div
+                class="group rounded-2xl border border-[#02005B]/10 bg-white p-7 text-right shadow-[0_2px_20px_rgba(2,0,91,0.05)] transition-all duration-300 hover:border-t-[#034EFF] hover:bg-[#FAFBFD] lg:p-8"
+                data-aos="fade-up-sm"
+                data-aos-delay={i * 100}
+              >
+                <div class="mb-7 flex items-center justify-between">
+                  <Icon
+                    name={s.image}
+                    class="h-12 w-12 text-[#034EFF] transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <span class="font-mono text-sm text-muted-body">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 class="mb-4 max-sm:text-[21px] text-[28px] font-bold leading-tight text-black">
+                  <span class="text-black transition-colors duration-300 group-hover:text-[#034EFF]">
+                    {t.ar}
+                  </span>
+                  <span class="block text-xl font-medium text-muted-heading">{t.en}</span>
+                </h3>
+                <p class="mb-6 text-base leading-[1.75]">
+                  <span class="text-black">{c.ar}</span>
+                  <br />
+                  <span class="text-muted-body">{c.en}</span>
+                </p>
+                {s.button.enable && (
+                  <a
+                    href={s.button.link}
+                    class="inline-flex items-center gap-1 text-[16px] font-medium text-[#034EFF] transition duration-300"
                   >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M5 12l14 0" />
-                    <path d="M13 18l6 -6" />
-                    <path d="M13 6l6 6" />
-                  </svg>
-                </a>
-              )}
-            </div>
-          ))
+                    معرفة المزيد <span class="sr-only">Details</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="rtl:rotate-180"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M5 12l14 0" />
+                      <path d="M13 18l6 -6" />
+                      <path d="M13 6l6 6" />
+                    </svg>
+                  </a>
+                )}
+              </div>
+            );
+          })
         }
       </div>
     </div>
@@ -198,26 +348,26 @@ const posts = await getSinglePage("blog");
 
   <!-- feature -->
 
-  <section class="section">
+  <section class="bg-white py-6 md:py-9 lg:py-12">
     <div class="container">
-      <div class="justify-center mb-10 row xl:mb-14">
+      <div class="justify-center mb-8 row lg:mb-10">
         <div class="lg:col-8">
           <h2
-            class="text-center mb-6"
+            class="text-center mb-4 text-black [&_strong]:font-bold [&_strong]:text-muted-heading [&_strong]:opacity-100"
             data-aos="fade-up-sm"
             set:html={markdownify(feature.title)}
           />
         </div>
         <div class="lg:col-6">
-          <p
-            class="text-center"
-            data-aos="fade-up-sm"
-            set:html={markdownify(feature.content)}
-          />
+          <p class="text-center" data-aos="fade-up-sm">
+            <span class="text-black" set:html={markdownify(featureContent.ar)} />
+            <br />
+            <span class="text-muted-body" set:html={markdownify(featureContent.en)} />
+          </p>
         </div>
       </div>
       <div
-        class="flex flex-col-reverse gap-10 md:flex-row justify-center lg:justify-between md:items-stretch"
+        class="flex flex-col-reverse gap-8 md:flex-row justify-center lg:justify-between md:items-stretch"
       >
         <ServiceSlider feature={feature.features} />
       </div>
@@ -228,21 +378,29 @@ const posts = await getSinglePage("blog");
   <!-- review -->
   {
     testimonial.data.enable && (
-      <section class="section bg-primary">
-        <div class="container text-white relative z-10 max-w-[1400px] mx-auto">
+      <section class="bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
+        <div class="container relative z-10 mx-auto max-w-[1200px]">
           <div class="pb-8 lg:pb-10">
             <div class="flex flex-col gap-10 justify-center">
               <div>
-                <h2
-                  class="text-white text-center pb-4"
-                  data-aos="fade-up-sm"
-                  set:html={markdownify(testimonial.data.homepage_title)}
-                />
+                <h2 class="text-center pb-4" data-aos="fade-up-sm">
+                  <span
+                    class="block text-black max-sm:text-[21px]"
+                    set:html={markdownify(reviewTitle.ar)}
+                  />
+                  <span
+                    class="block text-muted-heading max-sm:text-[15px]"
+                    set:html={markdownify(reviewTitle.en)}
+                  />
+                </h2>
                 <p
-                  class="max-w-xl mx-auto text-center text-light/80"
+                  class="max-w-xl mx-auto text-center max-sm:text-[14px] max-sm:leading-[1.7]"
                   data-aos="fade-up-sm"
-                  set:html={markdownify(testimonial.data.content)}
-                />
+                >
+                  <span class="text-black" set:html={markdownify(reviewContent.ar)} />
+                  <br />
+                  <span class="text-muted-body" set:html={markdownify(reviewContent.en)} />
+                </p>
               </div>
 
               <Testimonial
@@ -251,9 +409,7 @@ const posts = await getSinglePage("blog");
 
               {false && (
                 <div class="inline-block text-center">
-                  <a href="/reviews" class="btn btn-outline-secondary">
-                    Read All Reviews
-                  </a>
+                  <Button href="/reviews" label="Read All Reviews" variant="blue" dir="ltr" />
                 </div>
               )}
             </div>
@@ -265,11 +421,11 @@ const posts = await getSinglePage("blog");
   <!-- review -->
 
   <!-- brand -->
-  <section class="bg-white py-16 md:py-20 lg:py-24">
+  <section class="bg-white py-6 md:py-9 lg:py-12">
     <div class="container">
       <div class="mb-10 text-center md:mb-12">
         <p
-          class="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-text-light"
+          class="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading"
           data-aos="fade-up-sm"
         >
           Our Partners
@@ -282,7 +438,7 @@ const posts = await getSinglePage("blog");
       <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 md:gap-x-12 md:gap-y-8">
         {
           brandLogos.map((brand) => (
-            <div class="flex w-40 items-center justify-center">
+            <div class="flex w-40 items-center justify-center grayscale opacity-60 transition duration-300 hover:opacity-100 hover:grayscale-0">
               <ImageMod
                 src={brand}
                 alt="Company Logo"

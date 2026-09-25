@@ -1,0 +1,63 @@
+---
+// Reusable JADH CTA button: a pill containing the label, with a circular
+// arrow "cap" attached to one end (see .jadh-btn in src/styles/buttons.css
+// for the visual design). This is THE button for every real CTA/action
+// button on the site -- migrate new ones here rather than hand-rolling
+// another variant inline.
+export interface Props {
+  href?: string;
+  label: string;
+  type?: "button" | "submit" | "reset";
+  variant?: "blue" | "white";
+  size?: "md" | "sm" | "sm-lg";
+  /** Which side the arrow/circle sits on: "rtl" trails to the left
+   * (for Arabic labels), "ltr" trails to the right (for English labels).
+   * Independent of the page's own dir -- pass to match the label. */
+  dir?: "rtl" | "ltr";
+  class?: string;
+  disabled?: boolean;
+}
+
+const {
+  href,
+  label,
+  type = "button",
+  variant = "blue",
+  size = "md",
+  dir = "rtl",
+  class: className,
+  disabled = false,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+const shift = dir === "rtl" ? -1 : 1;
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  disabled={href ? undefined : disabled}
+  dir={dir}
+  class:list={["jadh-btn", `jadh-btn--${variant}`, `jadh-btn--${size}`, className]}
+  style={`--jadh-btn-shift:${shift}`}
+  {...rest}
+>
+  <span class="jadh-btn__label">{label}</span>
+  <span class="jadh-btn__circle" aria-hidden="true">
+    <svg
+      class="jadh-btn__arrow"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M5 12l14 0"></path>
+      <path d="M13 18l6 -6"></path>
+      <path d="M13 6l6 6"></path>
+    </svg>
+  </span>
+</Tag>

@@ -1,6 +1,6 @@
     <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
 
-    <g fill="black">
+    <g fill="#004EFF">
 
         <!-- center -->
         <rect x="122" y="20" width="8" height="52" rx="2"/>

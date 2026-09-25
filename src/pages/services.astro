@@ -6,7 +6,7 @@ import { markdownify } from "@/lib/utils/textConverter";
 import CallToAction from "@/partials/CallToAction.astro";
 import Testimonial from "@/partials/Testimonial.astro";
 import { Icon } from "astro-icon/components";
-import ImageMod from "@/components/ImageMod.astro";
+import Button from "@/components/Button.astro";
 
 const serviceIndex = await getListPage("services", "-index");
 if (serviceIndex.data.draft) {
@@ -16,136 +16,191 @@ const { banner_title, description, button } = serviceIndex.data;
 const testimonial = await getListPage("testimonials", "testimonial");
 const services = await getSinglePage("services");
 const faqs = await getListPage("faq", "faq");
+
+// Same "Arabic <br> English" convention used across the rest of the site --
+// split at render time so each language can get its own colour.
+const splitBilingual = (s: string) => {
+  const parts = (s ?? "").split("<br>");
+  return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
+};
+const heroDescription = splitBilingual(description);
+const reviewTitle = splitBilingual(testimonial.data.homepage_title);
+const reviewContent = splitBilingual(testimonial.data.content);
 ---
 
 <Base {...serviceIndex.data} title="خدماتنا | جادة الأفق">
-  <section class="section bg-light ">
-    <div class="container">
-      <div class="flex flex-col lg:flex-row-reverse items-center gap-24">
-
-        <div class="lg:w-[70%] text-right">
-          {
-            banner_title && (
-              <h1
-                class="pb-4"
-                data-aos="fade-up-sm"
-                set:html={markdownify(banner_title)}
-              />
-            )
-          }
-
-          {
-            description && (
-              <div data-aos="fade-up-sm" data-aos-delay="100">
-                <p class="pb-8" set:html={markdownify(description)} />
-              </div>
-            )
-          }
-
-          {
-            button?.enable && (
-              <a
-                href={button.link}
-                class="btn btn-primary"
-                data-aos="fade-up-sm"
-                data-aos-delay="200"
-              >
-                {button.label}
-              </a>
-            )
-          }
+  <!-- Hero: text-only -- the decorative overlapping dotted-circle icon
+       cluster that used to sit on the left has been removed entirely (not
+       just hidden), so the content block now anchors to the end (right,
+       same me-auto/max-w-2xl convention used on the About/Contact heroes)
+       and uses its natural width instead of leaving a gap where the
+       graphic used to be. -->
+  <section class="relative overflow-hidden bg-[#F6F7F9] pt-16 pb-6 md:pb-9 lg:pt-20 lg:pb-12">
+    <div class="container relative z-10">
+      <div class="me-auto w-full max-w-2xl text-right" dir="rtl">
+        <div class="mb-3 flex items-center justify-start gap-3">
+          <span class="h-px w-10 bg-[#034EFF]" data-aos="grow-line" data-aos-delay="80"></span>
+          <span
+            class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading"
+            data-aos="fade-right-sm"
+          >
+            Our Services
+          </span>
         </div>
 
-        <div class="lg:w-[30%] flex justify-center">
-          <ImageMod
-            src="/images/pt-s.png"
-            alt="Services"
-            width={0}
-            height={0}
-            class="w-full max-w-[450px] h-auto"
-          />
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div
-        class="flex flex-col gap-20 lg:gap-24 xl:gap-32 max-w-xl lg:max-w-full mx-auto"
-      >
         {
-          services.map((s, i) => (
-            <div  dir="rtl" class="flex flex-col lg:flex-row justify-between items-center gap-10">
-              <div
-                class={`lg:w-[60%] w-full text-right ${i % 2 !== 0 && "lg:order-2"}`}
-                data-aos={`${i % 2 !== 0 ? "fade-left-sm" : "fade-right-sm"}`}
-                data-aos-delay={i * 100}
-              >
-                <h3 class="text-4xl pb-8" set:html={s.data.title} />
-                <p class="pb-6" set:html={s.data.contact_1} />
-                <p class="pb-8" set:html={s.data.contact_2} />
-                {s?.data?.button?.enable && (
-                  <a href={s.data.button.link} class="btn btn-primary">
-                    {s.data.button.label}
-                  </a>
-                )}
-              </div>
-              <div
-                class={`lg:w-[40%] w-full flex justify-end`}
-                data-aos={`${i % 2 !== 0 ? "fade-right-sm" : "fade-left-sm"}`}
-                data-aos-delay={i * 100}
-              >
-                <div class="border border-border rounded-xl p-16 md:p-20">
-                  <Icon
-                    name={s.data.image}
-                    class={`h-auto w-full text-[220px] text-black ${
-                      i !== services.length - 1 ? "spin-animation" : ""
-                    }`}
-                  />
-                </div>
-              </div>
-            </div>
-          ))
+          banner_title && (
+            <h1
+              class="pb-4 text-black [&_strong]:font-bold [&_strong]:text-muted-heading [&_strong]:opacity-100"
+              data-aos="fade-up-sm"
+              data-aos-delay="80"
+              set:html={markdownify(banner_title)}
+            />
+          )
+        }
+
+        {
+          description && (
+            <p
+              class="max-w-xl text-[15px] leading-[1.7] lg:text-base"
+              data-aos="fade-up-sm"
+              data-aos-delay="140"
+            >
+              <span class="text-black" set:html={markdownify(heroDescription.ar)} />
+              <br />
+              <span class="text-muted-body" set:html={markdownify(heroDescription.en)} />
+            </p>
+          )
+        }
+
+        {
+          button?.enable && (
+            <Button
+              href={button.link}
+              label={button.label}
+              variant="blue"
+              dir="ltr"
+              class="svc-btn mt-6"
+              data-aos="fade-up-sm"
+              data-aos-delay="200"
+            />
+          )
         }
       </div>
     </div>
   </section>
 
+  <!-- Service list: existing alternating image/text layout, restyled with
+       a static blue icon in a light panel instead of the oversized
+       spinning black icon in a gray-bordered box. -->
+  <section class="bg-white py-6 md:py-9 lg:py-12">
+    <div class="container">
+      <div class="mx-auto flex max-w-xl flex-col gap-20 lg:max-w-full lg:gap-24 xl:gap-28">
+        {
+          services.map((s, i) => {
+            const t = splitBilingual(s.data.title as string);
+            const c1 = splitBilingual(s.data.contact_1 as string);
+            const c2 = splitBilingual(s.data.contact_2 as string);
+            return (
+              <div dir="rtl" class="flex flex-col items-center justify-between gap-10 lg:flex-row">
+                <div class={`w-full text-right lg:w-[58%] ${i % 2 !== 0 ? "lg:order-2" : ""}`}>
+                  <span
+                    class="font-mono text-sm text-muted-body"
+                    data-aos="fade-up-sm"
+                    data-aos-delay={i * 100}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3
+                    class="mb-6 mt-2 text-3xl font-bold leading-tight text-black lg:text-4xl"
+                    data-aos="fade-up-sm"
+                    data-aos-delay={i * 100 + 40}
+                  >
+                    {t.ar}
+                    <span class="mt-1 block text-xl font-medium text-muted-heading lg:text-2xl">
+                      {t.en}
+                    </span>
+                  </h3>
+                  <p
+                    class="mb-5 text-[15px] leading-[1.7] lg:text-base"
+                    data-aos="fade-up-sm"
+                    data-aos-delay={i * 100 + 100}
+                  >
+                    <span class="text-black">{c1.ar}</span>
+                    <br />
+                    <span class="text-muted-body">{c1.en}</span>
+                  </p>
+                  <p
+                    class="mb-8 text-[15px] leading-[1.7] lg:text-base"
+                    data-aos="fade-up-sm"
+                    data-aos-delay={i * 100 + 160}
+                  >
+                    <span class="text-black">{c2.ar}</span>
+                    <br />
+                    <span class="text-muted-body">{c2.en}</span>
+                  </p>
+                  {s?.data?.button?.enable && (
+                    <Button
+                      href={s.data.button.link}
+                      label={s.data.button.label}
+                      variant="blue"
+                      dir="ltr"
+                      class="svc-btn"
+                      data-aos="fade-up-sm"
+                      data-aos-delay={i * 100 + 220}
+                    />
+                  )}
+                </div>
+                <div
+                  class="flex w-full justify-center lg:w-[38%] lg:justify-end"
+                  data-aos="image-reveal"
+                  data-aos-delay={i * 100 + 60}
+                >
+                  <div class="flex items-center justify-center rounded-2xl bg-[#F6F7F9] p-14 max-sm:p-10 md:p-16">
+                    <Icon name={s.data.image} class="h-auto w-[140px] max-sm:w-[100px] text-[#034EFF] md:w-[160px]" />
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews: exact same Testimonial component + homepage data source,
+       restyled to the homepage's light wrapper instead of the old black
+       bg-primary band -- structurally and visually identical to the
+       homepage version. -->
   {
     testimonial.data.enable && (
-      <section class="section bg-primary">
-        <div class="container text-white">
-          <div class="pb-24 lg:pb-28">
-            <div class="flex flex-col gap-10 justify-center">
+      <section class="bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
+        <div class="container relative z-10 mx-auto max-w-[1200px]">
+          <div class="pb-8 lg:pb-10">
+            <div class="flex flex-col justify-center gap-10">
               <div>
-                <h2
-                  class="text-white text-center pb-4"
-                  data-aos="fade-up-sm"
-                  set:html={markdownify(testimonial.data.homepage_title)}
-                />
+                <h2 class="pb-4 text-center" data-aos="fade-up-sm">
+                  <span
+                    class="block text-black max-sm:text-[21px]"
+                    set:html={markdownify(reviewTitle.ar)}
+                  />
+                  <span
+                    class="block text-muted-heading max-sm:text-[15px]"
+                    set:html={markdownify(reviewTitle.en)}
+                  />
+                </h2>
                 <p
-                  class="max-w-xl mx-auto text-center text-light/80"
+                  class="mx-auto max-w-xl text-center max-sm:text-[14px] max-sm:leading-[1.7]"
                   data-aos="fade-up-sm"
-                  set:html={markdownify(testimonial.data.content)}
-                />
+                  data-aos-delay="80"
+                >
+                  <span class="text-black" set:html={markdownify(reviewContent.ar)} />
+                  <br />
+                  <span class="text-muted-body" set:html={markdownify(reviewContent.en)} />
+                </p>
               </div>
 
-              <Testimonial
-                testimonials={testimonial.data.testimonials.slice(0, 5)}
-              />
-            {false && (
-              <div
-                class="inline-block text-center"
-                data-aos="fade-up-sm"
-                data-aos-delay="400"
-              >
-                <a href="/reviews" class="btn btn-outline-secondary">
-                  Read All Reviews
-                </a>
-              </div>
-              )}
+              <Testimonial testimonials={testimonial.data.testimonials.slice(0, 5)} />
             </div>
           </div>
         </div>
@@ -156,3 +211,43 @@ const faqs = await getListPage("faq", "faq");
   {faqs.data.enable && <CustomAccordion faqs={faqs.data} client:only="react" />}
   <CallToAction />
 </Base>
+
+<style is:global>
+  /* Every CTA button on this page only -- the .svc-btn marker class lands
+     directly on the <Button>'s own root element (it's just forwarded into
+     that component's class:list), so this never touches .jadh-btn--md
+     globally or any button on another page. Same reduction values already
+     used for the CallToAction section's own button, for consistency. */
+  .svc-btn.jadh-btn--md {
+    height: 40px;
+    gap: 10px;
+    padding-inline-start: 18px;
+    padding-inline-end: 4px;
+    font-size: 12px;
+  }
+  .svc-btn.jadh-btn--md .jadh-btn__circle {
+    width: 30px;
+    height: 30px;
+  }
+  .svc-btn.jadh-btn--md .jadh-btn__arrow {
+    width: 14px;
+    height: 14px;
+  }
+  @media (min-width: 768px) {
+    .svc-btn.jadh-btn--md {
+      height: 46px;
+      gap: 12px;
+      padding-inline-start: 22px;
+      padding-inline-end: 5px;
+      font-size: 14px;
+    }
+    .svc-btn.jadh-btn--md .jadh-btn__circle {
+      width: 36px;
+      height: 36px;
+    }
+    .svc-btn.jadh-btn--md .jadh-btn__arrow {
+      width: 16px;
+      height: 16px;
+    }
+  }
+</style>

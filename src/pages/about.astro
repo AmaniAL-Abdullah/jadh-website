@@ -1,7 +1,6 @@
 ---
-import ImageMod from "@/components/ImageMod.astro";
 import Base from "@/layouts/Base.astro";
-import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { getListPage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import CallToAction from "@/partials/CallToAction.astro";
 
@@ -9,247 +8,200 @@ const about = await getListPage("about", "-index");
 if (about.data.draft) {
   return Astro.redirect("/404");
 }
-const { title, description, button, image, story, value, team, career } =
-  about.data;
+const { title, description, story, value } = about.data;
 
-const careers = await getSinglePage("career");
+// Data fields on this page follow the same "Arabic <br> English" pattern
+// used on the homepage -- split at render time so each language can get
+// its own color, without touching the underlying content.
+const splitBilingual = (s: string) => {
+  const parts = (s ?? "").split("<br>");
+  return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
+};
+
+const aboutDescription = splitBilingual(description);
+const storyTitle = splitBilingual(story.title);
+const storyContent1 = splitBilingual(story.content_1);
+const storyContent2 = splitBilingual(story.content_2);
+const valueTitle = splitBilingual(value.title);
+const valueContent = splitBilingual(value.content);
 ---
 
 <Base {...about.data}>
-
-  <section class="relative overflow-hidden pt-[120px] pb-[120px] bg-[#f6f7f9]">
-    <div class="container ">
-      <div class="items-center justify-between row g-4 gy-2 xl:gy-0 flex-row-reverse">
-        <div class="lg:col-6 text-right lg:pr-10">
-          <h1
-            class="pb-4 text-[42px] md:text-[66px] leading-[1.1]"
-            data-aos="fade-up-sm"
-            set:html={markdownify(title)}
-          />
-          <div class="text-right max-w-[700px]"
-              data-aos="fade-up-sm"
-              data-aos-delay="100" >
-            <p class="pb-6 text-[17px] md:text-[20px]" set:html={markdownify(description)}  />
-            {
-              button.enable && (
-                <a href={button.link} class="btn btn-primary">
-                  {button.label} c
-                </a>
-              )
-            }
-          </div>
+  <!-- Hero: compact, text-only -- the page's own images (a generic 3D
+       brand-orb render and an unrelated leftover stock security icon)
+       don't fit a premium editorial page, so they're dropped here rather
+       than kept just because they existed. -->
+  <section class="relative overflow-hidden bg-[#F6F7F9] pt-16 pb-6 md:pb-9 lg:pt-20 lg:pb-12">
+    <div class="container relative z-10">
+      <div class="me-auto max-w-2xl text-right" dir="rtl">
+        <div class="mb-3 flex items-center justify-start gap-3">
+          <span class="h-px w-10 bg-[#034EFF]" data-aos="grow-line" data-aos-delay="80"></span>
+          <span
+            class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading"
+            data-aos="fade-right-sm"
+          >
+            About Jadh
+          </span>
         </div>
-        <!-- Desktop -->
-        <img
-          src="/images/jadh-ab.png"
-          alt="About Image"
-          class="hidden lg:block w-[470px] max-w-none lg:absolute lg:left-[80px] lg:top-1/2 -translate-y-1/2"
-        />
 
-        <!-- Mobile + Tablet -->
-        <img
-          src="/images/jadh-ab.png"
-          alt="About Image"
-          class="block lg:hidden w-[340px] md:w-[440px] mx-auto mt-6"
-        />
+        <h1 data-aos="fade-up-sm" data-aos-delay="50" set:html={title} />
+
+        <p
+          class="mt-6 text-[15px] leading-[1.85] lg:text-base"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+        >
+          <span class="text-black" set:html={markdownify(aboutDescription.ar)} />
+          <br />
+          <span class="text-muted-body" set:html={markdownify(aboutDescription.en)} />
+        </p>
       </div>
     </div>
   </section>
 
-
-  <section class="pb-0 section">
+  <!-- Vision & Mission + the existing stats -->
+  <section class="bg-white py-6 md:py-9 lg:py-12">
     <div class="container">
-      <div class="row g-4">
+      <div class="mx-auto max-w-xl text-center" data-aos="fade-up-sm">
+        <h2 class="text-3xl font-bold text-black lg:text-4xl">
+          {storyTitle.ar}
+          <span class="mt-2 block text-lg font-medium text-muted-heading lg:text-xl">
+            {storyTitle.en}
+          </span>
+        </h2>
+      </div>
+
+      <!-- First DOM child renders on the visual right in this grid (this
+           grid's dir=rtl does flip track order) -- vision first so it
+           reads before mission, matching the heading's own "Vision &
+           Mission" order. -->
+      <div class="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2 lg:mt-16" dir="rtl">
+        <div
+          class="rounded-2xl border border-[#02005B]/8 bg-white p-8 text-right shadow-[0_2px_24px_rgba(2,0,91,0.05)]"
+          data-aos="fade-up-sm"
+        >
+          <p class="text-[15px] leading-[1.85] lg:text-base">
+            <span class="text-black">{storyContent1.ar}</span>
+            <br />
+            <span class="text-muted-body">{storyContent1.en}</span>
+          </p>
+        </div>
+        <div
+          class="rounded-2xl border border-[#02005B]/8 bg-white p-8 text-right shadow-[0_2px_24px_rgba(2,0,91,0.05)]"
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+        >
+          <p class="text-[15px] leading-[1.85] lg:text-base">
+            <span class="text-black">{storyContent2.ar}</span>
+            <br />
+            <span class="text-muted-body">{storyContent2.en}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="mx-auto mt-6 grid max-w-4xl gap-5 sm:grid-cols-3" dir="rtl">
         {
-          story.stats.map((s, i: number) => (
-            <div
-              class="sm:col-6 lg:col-4"
-              data-aos="fade-right-sm"
-              data-aos-delay={50 + i * 100}
-            >
-              <div class="h-full p-8 border border-border rounded-lg">
-                <h2
-                  class="pb-3 text-4xl text-center"
-                  set:html={markdownify(s.value)}
-                />
-                <p
-                  class="text-center text-text-light"
-                  set:html={markdownify(s.key)}
-                />
+          story.stats.map((s: { key: string; value: string }, i: number) => {
+            const k = splitBilingual(s.key);
+            return (
+              <div
+                class="rounded-2xl border border-[#02005B]/8 bg-[#F6F7F9] p-6 text-center"
+                data-aos="fade-up-sm"
+                data-aos-delay={i * 100}
+              >
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-black">
+                  {k.ar}
+                </p>
+                <p class="text-[11px] uppercase tracking-[0.2em] text-muted-body">{k.en}</p>
+                <p class="mt-3 text-2xl font-bold text-[#034EFF] lg:text-3xl">{s.value}</p>
               </div>
-            </div>
-          ))
+            );
+          })
         }
       </div>
     </div>
   </section>
 
-
-  <section class="section">
+  <!-- Our Goals: three cards reusing the EXACT card language already
+       established on the homepage Services section (same rounded-2xl/
+       border/shadow/gap values, the same hover:border-t-[#034EFF] +
+       hover:bg-[#FAFBFD] accent, the same numbered font-mono index) --
+       plus a restrained lift+shadow on hover, since these cards (unlike
+       the service cards) have no icon/button of their own to carry the
+       interaction. Tall section padding and generous heading/intro
+       margins give the three cards real room to breathe. -->
+  <section class="bg-white py-16 md:py-24 lg:py-32">
     <div class="container">
-      <div class="flex flex-col lg:flex-row-reverse items-start justify-between">
-        <div class="w-full lg:w-[40%] max-lg:mb-11 text-right" data-aos="fade-up-sm">
-          <h2 set:html={markdownify(story.title)} />
-        </div>
-        <div class="w-full lg:w-[55%] text-right">
-          <p
-            class="pb-8"
-            data-aos="fade-up-sm"
-            set:html={markdownify(story.content_1)}
-          />
-          <p data-aos="fade-up-sm" set:html={markdownify(story.content_2)} />
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="section bg-primary">
-    <div class="container">
-      <div class="justify-between row g-4 gy-5 flex-row-reverse">
-        <div class="lg:col-4 text-right">
-          <h3
-            class="pb-5 text-4xl text-white"
-            data-aos="fade-up-sm"
-            set:html={markdownify(value.title)}
-          />
-          <p
-            class="text-light/50"
-            data-aos="fade-up-sm"
-            set:html={markdownify(value.content)}
-          />
-        </div>
-        <div class="text-white lg:col-6 text-right" dir="rtl">
-          <div class="flex flex-col gap-7">
-            {
-              value.values.map((v, i) => (
-                <div
-                  class={`flex flex-col gap-5 pb-5 text-right ${
-                    i !== value.values.length - 1
-                      ? "border-b-2 border-border/20"
-                      : ""
-                  }`}
-                  data-aos="fade-up-sm"
-                  data-aos-delay={50 + i * 100}
-                >
-                  <h3
-                    class="text-2xl text-white"
-                    set:html={markdownify(v.title)}
-                  />
-                  <p class="text-light/80" set:html={markdownify(v.content)} />
-                </div>
-              ))
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-{/*
-  <section class="pb-0 section">
-    <div class="container">
-      <div class="mb-10 xl:mb-14">
+      <div class="mb-12 flex items-end justify-between gap-8 lg:mb-16" dir="rtl">
         <h2
-          class="pb-4 text-4xl text-center"
+          class="max-w-xl text-3xl font-bold text-black lg:text-4xl"
           data-aos="fade-up-sm"
-          set:html={markdownify(team.title)}
-        />
-        <p
-          class="text-center"
-          data-aos="fade-up-sm"
-          set:html={markdownify(team.content)}
-        />
+        >
+          {valueTitle.ar}
+          <span class="mt-2 block text-lg font-medium text-muted-heading lg:text-xl">
+            {valueTitle.en}
+          </span>
+        </h2>
+        <span
+          class="hidden h-px flex-1 bg-[#02005B]/10 md:block"
+          data-aos="grow-line"
+          data-aos-delay="120"
+        ></span>
       </div>
-      <div class="row g-4">
+
+      <p
+        class="mb-16 max-w-2xl text-[15px] leading-[1.85] lg:mb-20"
+        dir="rtl"
+        data-aos="fade-up-sm"
+        data-aos-delay="80"
+      >
+        <span class="text-black">{valueContent.ar}</span>
+        <br />
+        <span class="text-muted-body">{valueContent.en}</span>
+      </p>
+
+      <div class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" dir="rtl">
         {
-          team.members.map((m, i) => (
-            <div
-              class="sm:col-6 md:col-4 lg:col-3"
-              data-aos="fade-up-sm"
-              data-aos-delay={50 + i * 100}
-            >
-              <div class="p-4 pb-6 border border-border rounded-xl">
-                <ImageMod
-                  src={m.image}
-                  alt="Team Member"
-                  class="pb-3 rounded-inherit"
-                  width={0}
-                  height={0}
-                  format="webp"
-                />
-                <h3 class="pb-1 text-xl" set:html={m.name} />
-                <p class="text-text-light" set:html={m.designation} />
+          value.values.map((v: { title: string; content: string }, i: number) => {
+            const t = splitBilingual(v.title);
+            const c = splitBilingual(v.content);
+            return (
+              // AOS sets an inline transition-duration (the sitewide 600ms
+              // default) on whatever element carries data-aos, which would
+              // otherwise silently override this card's own duration-300
+              // hover transition. Splitting the AOS entrance (outer, gets
+              // the normal 600ms sitewide reveal) from the hover-interactive
+              // card (inner, its own clean duration-300) keeps both correct
+              // and independent.
+              <div data-aos="fade-up-sm" data-aos-delay={i * 100}>
+                <div class="group flex h-full flex-col rounded-2xl border border-[#02005B]/10 bg-white p-8 text-right shadow-[0_2px_20px_rgba(2,0,91,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-t-[#034EFF] hover:bg-[#FAFBFD] hover:shadow-[0_16px_36px_rgba(2,0,91,0.12)] lg:p-10">
+                  <div class="mb-8 flex items-center justify-between">
+                    <span data-aos="dot-pop" data-aos-delay={i * 100 + 150} class="inline-flex">
+                      <span class="block h-2 w-2 rounded-full bg-[#034EFF] transition-transform duration-300 group-hover:scale-125" />
+                    </span>
+                    <span class="font-mono text-sm text-muted-body">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 class="mb-4 text-2xl text-black">
+                    <span class="text-black transition-colors duration-300 group-hover:text-[#034EFF]">
+                      {t.ar}
+                    </span>
+                    <span class="block text-lg text-muted-heading">{t.en}</span>
+                  </h3>
+                  <p class="leading-[1.85]">
+                    <span class="text-black">{c.ar}</span>
+                    <br />
+                    <span class="text-muted-body">{c.en}</span>
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         }
       </div>
     </div>
   </section>
-*/}
-{/*
-  <section class="pb-0 mx-5 section">
-    <div class="container">
-      <div class="mb-10 xl:mb-14">
-        <h2
-          class="pb-4 text-4xl text-center"
-          data-aos="fade-up-sm"
-          set:html={markdownify(career.title)}
-        />
-        <p
-          class="max-w-xl mx-auto text-center"
-          data-aos="fade-up-sm"
-          set:html={markdownify(career.content)}
-        />
-      </div>
-      <div class="row justify-center">
-        <div class="lg:col-8">
-          {
-            careers.map((career, i: number) => (
-              <div class="flex flex-col gap-5 not-last:mb-5">
-                <div
-                  class="row lg:gx-4 items-center border border-border sm:px-4 py-3 rounded-lg"
-                  data-aos="fade-up-sm"
-                  data-aos-delay={50 + i * 100}
-                >
-                  <div class="md:col-6">
-                    <div class="flex items-center gap-5">
-                      <div class="bg-secondary/15 w-10 h-10 rounded-full flex justify-center items-center">
-                        <p class="text-secondary font-bold text-lg">{i + 1}</p>
-                      </div>
-                      <p
-                        class="font-semibold"
-                        set:html={markdownify(career.data.title)}
-                      />
-                    </div>
-                  </div>
-                  <div class="md:col-6">
-                    <div class="flex justify-between items-center pt-3 lg:pt-0">
-                      <p
-                        class="text-text-light"
-                        set:html={markdownify(career?.data?.duration!)}
-                      />
-                      <p
-                        class="text-text-light"
-                        set:html={markdownify(career?.data?.location!)}
-                      />
-                      <a
-                        href={`/career/${career.id}`}
-                        class="btn border border-secondary text-secondary hover:opacity-80"
-                      >
-                        Apply Now
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
-*/}
+
   <CallToAction />
 </Base>

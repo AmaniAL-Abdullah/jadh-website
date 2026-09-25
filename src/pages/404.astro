@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Button from "@/components/Button.astro";
 ---
 
 <Base title="الصفحة غير موجودة">
@@ -25,12 +26,14 @@ import Base from "@/layouts/Base.astro";
               Sorry, the page you are looking for is unavailable or has been moved
             </p>
           </div>
-          <a
+          <Button
             href="/"
-            class="btn btn-primary mt-8"
+            label="العودة إلى الرئيسية"
+            variant="blue"
+            class="mt-8"
             data-aos="fade-up-sm"
-            data-aos-delay="300">العودة إلى الرئيسية</a
-          >
+            data-aos-delay="300"
+          />
         </div>
       </div>
     </div>

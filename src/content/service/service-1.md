@@ -5,8 +5,9 @@ description: "Protect your software and data with our comprehensive security aud
 image: "service-1"
 draft: false
 
-contact_1: "إدارة وتشغيل الحلول اللوجستية بكفاءة عالية تضمن انسيابية العمليات وتحسين تجربة الأعمال<br>Managing and operating logistics solutions with high efficiency to ensure smooth operations and enhanced business performance"
-contact_2: "نساعد الشركات على تنظيم العمليات اللوجستية وتطوير سلاسل الإمداد بما يدعم سرعة التنفيذ ورفع الكفاءة التشغيلية <br>We help businesses optimize logistics operations and supply chains to support faster execution and improve operational efficiency"
+contact_1: "إدارة وتشغيل الحلول اللوجستية بكفاءة عالية تضمن انسيابية العمليات وتحسين تجربة الأعمال، ونساعد الشركات على تنظيم العمليات اللوجستية وتطوير سلاسل الإمداد بما يدعم سرعة التنفيذ ورفع الكفاءة التشغيلية."
+
+contact_2: "Managing and operating logistics solutions with high efficiency to ensure smooth operations and enhanced business performance. We help businesses optimize logistics operations and supply chains to support faster execution and improve operational efficiency."
 button:
   enable: true
   label: "ابدا الأن "

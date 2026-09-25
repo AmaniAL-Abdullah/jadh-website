@@ -57,7 +57,7 @@ const Globe = () => {
       glowColor: [0.0118, 0.3059, 1], // #034EFF
       markers: [],
       offset: [0, width * 0.42],
-      scale: 1.5,
+      scale: 1.8,
       onRender: (state) => {
         if (!pointerInteracting.current) {
           phi += 0.003;

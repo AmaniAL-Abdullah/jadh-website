@@ -1,6 +1,5 @@
 ---
 // ServiceSlider.astro
-import DynamicIcon from "@/helpers/DynamicIcon";
 import { markdownify } from "@/lib/utils/textConverter";
 
 import ImageMod from "../ImageMod.astro";
@@ -10,115 +9,173 @@ interface Props {
 }
 
 const { feature } = Astro.props;
+
+// Same "Arabic <br> English" convention used across the rest of the site --
+// split at render time so each language can get its own colour.
+const splitBilingual = (s: string) => {
+  const parts = (s ?? "").split("<br>");
+  return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
+};
 ---
 
 <div class="w-full md:w-1/2 md:order-2">
   <div
-    class="relative h-full border border-border bg-[#fafafa] rounded-xl overflow-hidden"
+    class="relative h-full overflow-hidden rounded-xl border border-[#02005B]/10 bg-white"
     data-aos="fade-right-sm"
   >
-
-    <div class="relative p-8 md:h-full h-[500px] md:p-14">
-
-      <!-- Background Logo -->
-      <div class="absolute inset-0 bg-[url('/images/JD.svg')] bg-[length:95%] bg-[position:center_60%] bg-no-repeat opacity-[0.03]"></div>
+    <div class="relative flex h-[240px] items-center justify-center p-6 md:h-full md:p-10">
+      <!-- Background watermark: subtle, precisely centered, aspect preserved (source is square) -->
+      <div class="absolute inset-0 bg-[url('/images/bg-sv.svg')] bg-[length:80%] bg-center bg-no-repeat opacity-[0.05]"></div>
+      <!-- Soft radial wash, reacts subtly with the active value -->
+      <div
+        id="panel-glow"
+        class="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        style="background: radial-gradient(circle at 50% 45%, rgba(3,78,255,0.08), transparent 65%);"
+      ></div>
 
       {
         feature.map((f, i) => (
           <div
-            class={`absolute w-[90%] md:w-max h-max top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${
+            class={`absolute w-[70%] md:w-max h-max transition-all duration-500 ease-out ${
               i === 0
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
             }`}
             data-tab-content={i}
           >
             <ImageMod
               src={f.image}
-              width={280}
-              height={280}
+              width={190}
+              height={190}
               alt="feature image"
-              class="mx-auto object-contain"
+              class="mx-auto object-contain md:w-[210px]"
             />
           </div>
         ))
       }
-
     </div>
   </div>
 </div>
 
-<div class="w-full md:w-1/2 md:order-1">
-  <div class="row md:gy-4 text-right" dir="rtl">
-
+<div class="relative w-full md:w-1/2 md:order-1">
+  <div id="value-list" class="row max-sm:mx-0! md:gy-1 text-right" dir="rtl">
     {
       feature.map((f, i) => (
-        <div data-tab-trigger={i} class="cursor-pointer">
-
+        <div
+          data-tab-trigger={i}
+          class="relative z-10 cursor-pointer rounded-xl border-e-2 transition-all duration-300 ease-out"
+          style="border-inline-end-color: transparent;"
+        >
           <div
-            class="flex gap-5 pb-10 md:pb-7 items-start text-right justify-end"
-            dir="rtl"
+            class="flex items-start justify-end gap-4 px-3 py-3.5 text-right"
             data-aos="fade-left-sm"
             data-aos-delay={i * 100}
           >
-
-            <div class="w-16 h-16 flex items-center justify-center">
+            <div
+              data-tab-icon={i}
+              class="flex h-[50px] w-[50px] shrink-0 items-center justify-center"
+            >
               <ImageMod
                 src={f.icon}
                 alt="feature icon"
-                width={56}
-                height={56}
+                width={45}
+                height={45}
                 class="object-contain"
               />
             </div>
 
-            <div class="pb-5 hover-border-effect text-right w-full">
-              <h3
-                class="pb-4 text-2xl"
-                set:html={markdownify(f.title)}
-              />
+            <div class="w-full text-right" data-tab-text={i}>
+              <h3 class="pb-1.5 text-xl" data-tab-title={i}>
+                <span
+                  class="text-black transition-colors duration-300"
+                  set:html={markdownify(splitBilingual(f.title).ar)}
+                />
+                {splitBilingual(f.title).en && (
+                  <span
+                    class="block text-muted-heading transition-colors duration-300"
+                    set:html={markdownify(splitBilingual(f.title).en)}
+                  />
+                )}
+              </h3>
 
-              <p set:html={markdownify(f.description)} />
+              <p class="text-sm">
+                <span
+                  class="text-black transition-colors duration-300"
+                  set:html={markdownify(splitBilingual(f.description).ar)}
+                />
+                <br />
+                <span
+                  class="text-muted-body transition-colors duration-300"
+                  set:html={markdownify(splitBilingual(f.description).en)}
+                />
+              </p>
             </div>
-
           </div>
         </div>
       ))
     }
-
   </div>
 </div>
 
 <script>
   document.addEventListener("astro:page-load", () => {
-    const tabTriggers = document.querySelectorAll("[data-tab-trigger]");
-    const tabContents = document.querySelectorAll("[data-tab-content]");
+    const triggers = document.querySelectorAll<HTMLElement>("[data-tab-trigger]");
+    const contents = document.querySelectorAll<HTMLElement>("[data-tab-content]");
+    const texts = document.querySelectorAll<HTMLElement>("[data-tab-text]");
+    const list = document.getElementById("value-list");
 
-    function setActiveTab(index: string | null) {
-      tabContents.forEach((content) => {
-        content.classList.remove("opacity-100");
-        content.classList.add("opacity-0", "pointer-events-none");
+    function setActive(index: string | null) {
+      if (!index) return;
+
+      // Per-item accent: a slight lift, a soft shadow, and a thin blue edge
+      // line -- no background fill, card stays white throughout. Inline
+      // styles (not classList.toggle) for these three: two same-property
+      // utility classes don't reliably win/lose by DOM presence in
+      // Tailwind's generated stylesheet -- only source order does, which
+      // doesn't track which class is actually applied. Inline style always
+      // wins unambiguously. Title/description spans use the same inline-style
+      // approach so the hovered item's text (and only that item's) turns
+      // brand blue, overriding their default AR-black/EN-muted classes.
+      triggers.forEach((trigger) => {
+        const active = trigger.getAttribute("data-tab-trigger") === index;
+        trigger.style.transform = active ? "translateY(-4px)" : "";
+        trigger.style.borderInlineEndColor = active ? "#034EFF" : "transparent";
+        trigger.style.boxShadow = active ? "0 6px 18px -8px rgba(2,0,91,0.12)" : "";
       });
 
-      const activeContent = document.querySelector(
-        `[data-tab-content="${index}"]`
-      );
+      contents.forEach((content) => {
+        const active = content.getAttribute("data-tab-content") === index;
+        content.classList.toggle("opacity-100", active);
+        content.classList.toggle("scale-100", active);
+        content.classList.toggle("opacity-0", !active);
+        content.classList.toggle("scale-95", !active);
+        content.classList.toggle("pointer-events-none", !active);
+      });
 
-      if (activeContent) {
-        activeContent.classList.remove(
-          "opacity-0",
-          "pointer-events-none"
-        );
-
-        activeContent.classList.add("opacity-100");
-      }
+      texts.forEach((text) => {
+        const active = text.getAttribute("data-tab-text") === index;
+        text.querySelectorAll<HTMLElement>("span").forEach((span) => {
+          span.style.color = active ? "#034EFF" : "";
+        });
+      });
     }
 
-    tabTriggers.forEach((trigger) => {
-      trigger.addEventListener("click", () => {
-        const index = trigger.getAttribute("data-tab-trigger");
-        setActiveTab(index);
-      });
+    setActive("0");
+
+    triggers.forEach((trigger) => {
+      const index = trigger.getAttribute("data-tab-trigger");
+      trigger.addEventListener("click", () => setActive(index));
     });
+
+    // Hover preview -- desktop (fine pointer + hover capable) only. Mobile
+    // keeps the existing tap-to-select behaviour above, unaffected.
+    const supportsHoverFine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (supportsHoverFine && list) {
+      triggers.forEach((trigger) => {
+        const index = trigger.getAttribute("data-tab-trigger");
+        trigger.addEventListener("mouseenter", () => setActive(index));
+      });
+      list.addEventListener("mouseleave", () => setActive("0"));
+    }
   });
 </script>

@@ -3,6 +3,7 @@ import Logo from "@/components/Logo.astro";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import NavDropDown from "./NavDropDown";
+import Button from "@/components/Button.astro";
 
 export interface ChildNavigationLink {
   name: string;
@@ -19,84 +20,178 @@ export interface NavigationLink {
 const { main }: { main: NavigationLink[] } = menu;
 const { navigation_button } = config;
 const { pathname } = Astro.url;
+const isHome = pathname === "/";
 ---
 
-<header class="header">
-  <nav class="navbar w-full flex-row-reverse px-4 lg:px-6">
-    <!-- logo -->
-    <div class="order-0 flex items-start h-24 lg:h-24 -mt-9 lg:-mt-18">
+<!--
+  Structure: <nav> is a 3-column grid (auto / 1fr / auto) -- see the .navbar
+  rule in navigation.css. The logo (col 3) is pinned hard to the far right;
+  the nav (col 2, 1fr) centers itself in whatever space is actually left
+  before the logo rather than across the whole bar, so it reads as
+  "balanced toward center" without the composition looking like one
+  centered unit. Col 1 only has real width on mobile (the hamburger) --
+  it collapses to 0 at lg+ once the toggle is hidden. No dir="rtl" on the
+  grid itself -- each item is placed by plain DOM order (left-to-right),
+  which is what puts the logo physically on the right; RTL is only applied
+  to the text-bearing pieces inside each item. The mobile toggle
+  checkbox/label/panel keep the project's existing CSS-only
+  sibling-selector pattern (input#nav-toggle + label / ~ #nav-menu in
+  safe.css), so #nav-toggle, its <label>, and #nav-menu all remain direct
+  children of <nav> -- unwrapped -- for those selectors to keep matching.
 
+  Header state: home gets a transparent header fixed over the hero (so it
+  reads as part of the blue gradient) that turns into a translucent
+  blurred white bar once you scroll past the hero (.is-scrolled, toggled
+  by the script below); inner pages get a plain solid-white sticky header
+  at all times. Every color (nav text, active indicator, logo, hamburger)
+  is driven off the .header--home/.header--inner/.is-scrolled classes in
+  navigation.css, not hardcoded here.
+-->
+<header id="site-header" class={`header ${isHome ? "header--home" : "header--inner"}`}>
+  <div class="w-full">
+  <nav class="navbar px-4 py-4 lg:px-6 lg:py-5">
+      <input id="nav-toggle" type="checkbox" class="hidden" />
 
-      <Logo />
-    </div>
-    
-    <!-- navbar toggler -->
-    
-    <input id="nav-toggle" type="checkbox" class="hidden" />
-    <label
-  for="nav-toggle"
-  class="order-3 cursor-pointer flex items-center -mt-6 lg:hidden text-text-dark lg:order-1"
->
-      <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
+      <label
+        for="nav-toggle"
+        class="nav-toggle-btn col-start-1 flex cursor-pointer items-center justify-self-start p-2 lg:hidden"
+      >
+        <svg id="show-button" class="h-6 w-6 fill-current block" viewBox="0 0 20 20">
+          <title>Menu Open</title>
+          <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
+        </svg>
+        <svg id="hide-button" class="h-6 w-6 fill-current hidden" viewBox="0 0 20 20">
+          <title>Menu Close</title>
+          <polygon
+            points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
+            transform="rotate(45 10 10)"></polygon>
+        </svg>
+      </label>
 
-        <title>Menu Open</title>
-        <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
-      </svg>
-      <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
-        <title>Menu Close</title>
-        <polygon
-          points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
-          transform="rotate(45 10 10)"></polygon>
-      </svg>
-    </label>
-    
-    <!-- /navbar toggler -->
-    
-    <ul id="nav-menu" class="navbar-nav flex-row-reverse lg:-mt-4">
-      {
-        main.map((menu) => (
-          <>
-            {menu.hasChildren ? (
-              <NavDropDown menu={menu} pathname={pathname} client:load />
-            ) : (
-              <li class="nav-item">
-                <a
-                  href={menu.url}
-                  class={`nav-link flex flex-col items-center leading-tight ${(pathname === `${menu.url}/` || pathname === menu.url) && "active"}`}
-                  set:html={menu.name}
-                />
-              </li>
-            )}
-          </>
-        ))
-      }
       {
         navigation_button.enable && (
-          <li class="mt-4 inline-block lg:hidden">
-            <a
-              class="btn btn-outline-primary btn-sm"
-              href={navigation_button.link}
-            >
-              {navigation_button.label}
-            </a>
-          </li>
-        )
-      }
-    </ul>
-    
-    
-    <div class="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
-      {
-        navigation_button.enable && (
-          <a
-            class="btn btn-outline-primary btn-sm hidden lg:inline-block"
+          <Button
             href={navigation_button.link}
-          >
-            {navigation_button.label}
-          </a>
+            label={navigation_button.label}
+            variant="blue"
+            size="sm"
+            class="col-start-1 hidden justify-self-start lg:inline-flex"
+          />
         )
       }
-    </div>
-    
-  </nav>
+
+      <ul class="nav-pill col-start-2 hidden justify-self-center lg:flex lg:translate-y-1" dir="rtl">
+        {
+          main.map((menu) => (
+            <>
+              {menu.hasChildren ? (
+                <NavDropDown menu={menu} pathname={pathname} client:load />
+              ) : (
+                <li class="nav-item">
+                  <a
+                    href={menu.url}
+                    class={`nav-link flex flex-col items-center leading-tight ${(pathname === `${menu.url}/` || pathname === menu.url) && "active"}`}
+                    set:html={menu.name}
+                  />
+                </li>
+              )}
+            </>
+          ))
+        }
+      </ul>
+
+      <div class="col-start-3 flex items-center justify-self-end">
+  <Logo />
+</div>
+
+      <ul id="nav-menu" class="nav-menu-mobile col-span-3 hidden" dir="rtl">
+        {
+          main.map((menu) => (
+            <>
+              {menu.hasChildren ? (
+                <NavDropDown menu={menu} pathname={pathname} client:load />
+              ) : (
+                <li class="nav-item">
+                  <a
+                    href={menu.url}
+                    class={`nav-link flex flex-col items-center leading-tight ${(pathname === `${menu.url}/` || pathname === menu.url) && "active"}`}
+                    set:html={menu.name}
+                  />
+                </li>
+              )}
+            </>
+          ))
+        }
+        {
+          navigation_button.enable && (
+            <li class="mt-2 inline-block">
+              <Button href={navigation_button.link} label={navigation_button.label} variant="blue" size="sm" />
+            </li>
+          )
+        }
+      </ul>
+    </nav>
+  </div>
 </header>
+
+<script>
+  // Toggles .is-scrolled on the header once the page has scrolled past the
+  // hero, so the home header can fade from transparent into a translucent
+  // blurred white bar (see .header--home.is-scrolled in navigation.css).
+  // Harmless no-op on inner pages, which don't style that class.
+  //
+  // Also toggles .is-hidden to slide the whole header up on scroll-down and
+  // back down on scroll-up (see .header.is-hidden in navigation.css) --
+  // state lives on the header element itself (data-last-scroll-y) rather
+  // than in a closure variable, so it stays correct across Astro view
+  // transitions, which swap in a brand-new <header> node per page.
+  const TOP_THRESHOLD = 32; // near the very top: always shown, never translucent
+  const HIDE_DELTA = 8; // ignore sub-8px jitter so tiny scrolls don't flicker it
+
+  function updateHeaderScrollState() {
+    const header = document.getElementById("site-header");
+    if (!header) return;
+
+    const toggle = document.getElementById("nav-toggle");
+    if (toggle instanceof HTMLInputElement && toggle.checked) {
+      // Mobile menu is open -- never hide it out from under the user.
+      header.classList.remove("is-hidden");
+      return;
+    }
+
+    const currentY = window.scrollY;
+    const lastY = Number(header.dataset.lastScrollY ?? currentY);
+
+    header.classList.toggle("is-scrolled", currentY > TOP_THRESHOLD);
+
+    if (currentY <= TOP_THRESHOLD) {
+      header.classList.remove("is-hidden");
+    } else if (currentY > lastY + HIDE_DELTA) {
+      header.classList.add("is-hidden");
+    } else if (currentY < lastY - HIDE_DELTA) {
+      header.classList.remove("is-hidden");
+    }
+
+    header.dataset.lastScrollY = String(currentY);
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateHeaderScrollState();
+      ticking = false;
+    });
+  }
+
+  updateHeaderScrollState();
+  document.addEventListener("astro:after-swap", updateHeaderScrollState);
+
+  document.getElementById("nav-toggle")?.addEventListener("change", updateHeaderScrollState);
+
+  if (!document.documentElement.dataset.headerScrollBound) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.documentElement.dataset.headerScrollBound = "true";
+  }
+</script>

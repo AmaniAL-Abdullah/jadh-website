@@ -37,7 +37,7 @@ const CustomAccordion = ({
                     }}
                   >
                     <div className="bg-secondary/15 w-10 h-10 rounded-full flex justify-center items-center shrink-0">
-                      <p className="text-secondary font-bold text-lg">
+                      <p className="text-[#034EFF] font-bold text-lg">
                         {i + 1}
                       </p>
                     </div>

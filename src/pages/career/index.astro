@@ -4,6 +4,7 @@ import Base from "@/layouts/Base.astro";
 import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import CallToAction from "@/partials/CallToAction.astro";
+import Button from "@/components/Button.astro";
 
 const careerIndex = await getListPage("career", "-index");
 if (careerIndex.data.draft) {
@@ -27,9 +28,7 @@ const careers = await getSinglePage("career");
           <p class="max-w-2xl mx-auto pb-8" set:html={markdownify(content!)} />
           {
             button?.enable && (
-              <a href={button.link} class="btn btn-primary">
-                {button.label}
-              </a>
+              <Button href={button.link} label={button.label} variant="blue" dir="ltr" />
             )
           }
         </div>
@@ -64,7 +63,7 @@ const careers = await getSinglePage("career");
                     set:html={markdownify(s.value)}
                   />
                   <p
-                    class="text-center text-text-light"
+                    class="text-center text-muted-body"
                     set:html={markdownify(s.key)}
                   />
                 </div>
@@ -161,19 +160,20 @@ const careers = await getSinglePage("career");
                   <div class="md:col-6">
                     <div class="flex justify-between items-center pt-3 lg:pt-0">
                       <p
-                        class="text-text-light"
+                        class="text-muted-body"
                         set:html={markdownify(career?.data?.duration!)}
                       />
                       <p
-                        class="text-text-light"
+                        class="text-muted-body"
                         set:html={markdownify(career?.data?.location!)}
                       />
-                      <a
+                      <Button
                         href={`/career/${career.id}`}
-                        class="btn border border-secondary text-secondary hover:opacity-80"
-                      >
-                        Apply Now
-                      </a>
+                        label="Apply Now"
+                        variant="blue"
+                        size="sm"
+                        dir="ltr"
+                      />
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 ---
-title: " <span class='block text-[30px] md:text-[44px] leading-[1] font-bold text-black'>جادة الأفق<span class='block mt-1 text-[22px] md:text-[30px] leading-[1] font-normal text-black'>حيث تلتقي الفرص بالحلول</span><span class='block mt-4 text-[15px] md:text-[26px] leading-[1.2] font-normal tracking-[0.03em] text-[#8a8a8a]'>Where Opportunities Meet Solutions</span>"
+title: " <span class='block text-[26px] md:text-[44px] leading-[1] font-bold text-black'> جــادة الأفـــــق<span class='block mt-1 text-[19px] md:text-[30px] leading-[1] font-normal text-black'>حيث تلتقي الفرص بالحلول</span><span class='block mt-3 md:mt-4 text-[14px] md:text-[26px] leading-[1.2] font-normal tracking-[0.03em] text-muted-heading'>Where Opportunities Meet Solutions</span>"
 content_1: "نعمل على تطوير الأعمال وتقديم حلول متكاملة تربط بين التشغيل والتقنية والشراكات لبناء قيمة مستدامة وتجارب تنفيذ موثوقة "
 meta_title: "من نحن"
 description: "نربط بين الفرص والإمكانات لتقديم حلول تدعم نمو الأعمال <br> Connecting opportunities to business growth "

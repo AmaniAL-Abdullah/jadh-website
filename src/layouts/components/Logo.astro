@@ -16,11 +16,20 @@ const {
 <a href="/" class="navbar-brand inline-flex items-center">
   {
     src || logo ? (
-      <img
-        src={src ? src : logo}
-        alt={title}
-        class="block h-28 w-auto lg:h-36"
-      />
+      // The logo file's own viewBox is a full 1500x1500 square with the
+      // actual wordmark occupying only a sub-region of it (measured:
+      // roughly x 210-1290, y 560-940 of that 1500x1500 canvas), so
+      // displaying it as a normal <img> at header size makes it look
+      // blank. Rather than edit the asset itself, this windows onto that
+      // same, unmodified file via background-size/position -- a crop of
+      // the view, not a change to the logo -- scaled/positioned so the
+      // wordmark fills the box at its own correct aspect ratio.
+      <span
+  role="img"
+  aria-label={title}
+  class="logo-mark block bg-no-repeat"
+  style={`width: 121px; height: 42.5px; background-image: url(${src ? src : logo}); background-size: 168.4px 168.4px; background-position: -23.58px -62.86px;`}
+/>
     ) : logo_text ? (
       logo_text
     ) : (

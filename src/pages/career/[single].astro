@@ -4,6 +4,7 @@ import { getSinglePage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import CallToAction from "@/partials/CallToAction.astro";
 import { render } from "astro:content";
+import Button from "@/components/Button.astro";
 
 export async function getStaticPaths() {
   const careers = await getSinglePage("career");
@@ -43,25 +44,25 @@ const { title, duration, vacant, salary } = career.data;
               data-aos-delay="200"
             >
               <li
-                class="mx-1 capitalize text-text-light"
+                class="mx-1 capitalize text-muted-body"
                 set:html={markdownify(duration!)}
               />
               <li
-                class="mx-1 capitalize text-text-light flex items-center gap-2"
+                class="mx-1 capitalize text-muted-body flex items-center gap-2"
               >
                 <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
                 ></span>
                 {markdownify(duration!)}
               </li>
               <li
-                class="mx-1 capitalize text-text-light flex items-center gap-2"
+                class="mx-1 capitalize text-muted-body flex items-center gap-2"
               >
                 <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
                 ></span>
                 {markdownify(vacant!)}
               </li>
               <li
-                class="mx-1 capitalize text-text-light flex items-center gap-2"
+                class="mx-1 capitalize text-muted-body flex items-center gap-2"
               >
                 <span class="w-1.5 h-1.5 rounded-full bg-text-dark inline-block"
                 ></span>
@@ -70,7 +71,7 @@ const { title, duration, vacant, salary } = career.data;
             </ul>
           </div>
         </div>
-        <a href="/contact" class="btn btn-primary"> Apply Now</a>
+        <Button href="/contact" label="Apply Now" variant="blue" dir="ltr" />
       </div>
     </div>
   </section>
@@ -164,7 +165,7 @@ const { title, duration, vacant, salary } = career.data;
                 placeholder="Message goes here..."
                 rows="3"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Now</button>
+            <Button type="submit" label="Submit Now" variant="blue" dir="ltr" />
           </form>
         </div>
       </div>
@@ -206,19 +207,20 @@ const { title, duration, vacant, salary } = career.data;
                   <div class="md:col-6">
                     <div class="flex justify-between items-center pt-3 lg:pt-0">
                       <p
-                        class="text-text-light"
+                        class="text-muted-body"
                         set:html={markdownify(career?.data?.duration!)}
                       />
                       <p
-                        class="text-text-light"
+                        class="text-muted-body"
                         set:html={markdownify(career?.data?.location!)}
                       />
-                      <a
+                      <Button
                         href={`/career/${career.id}`}
-                        class="btn border border-secondary text-secondary hover:opacity-80"
-                      >
-                        Apply Now
-                      </a>
+                        label="Apply Now"
+                        variant="blue"
+                        size="sm"
+                        dir="ltr"
+                      />
                     </div>
                   </div>
                 </div>

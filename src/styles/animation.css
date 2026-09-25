@@ -39,3 +39,57 @@
     opacity: 1;
   }
 }
+
+/* Image reveal: a soft clip-path wipe + gentle scale settle, for photos
+   (e.g. the About page office image) -- reads as the image "arriving"
+   rather than a plain fade. */
+[data-aos="image-reveal"] {
+  clip-path: inset(0 0 10% 0);
+  transform: scale(1.045);
+  opacity: 0;
+  transition-property: clip-path, transform, opacity;
+  &.aos-animate {
+    clip-path: inset(0 0 0% 0);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Divider line: grows from 0 to full width. Defaults to a right-edge
+   anchor (this site's dominant RTL reading direction -- lines sit to the
+   left of their label/heading and grow away from it); pass
+   style="transform-origin: left" per-instance where a line's anchor is
+   the opposite edge. */
+[data-aos="grow-line"] {
+  transform: scaleX(0);
+  transform-origin: right;
+  transition-property: transform;
+  &.aos-animate {
+    transform: scaleX(1);
+  }
+}
+
+/* Small accent dot (e.g. the blue goal-number dots): a soft scale + fade
+   entrance, never a bounce. */
+[data-aos="dot-pop"] {
+  transform: scale(0.35);
+  opacity: 0;
+  transition-property: transform, opacity;
+  &.aos-animate {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* All [data-aos] entrances above are purely decorative motion layered on
+   top of content that's already there -- under reduced motion, skip the
+   animation entirely rather than easing it, so content is simply present
+   with no transform/clip/opacity delay regardless of scroll position. */
+@media (prefers-reduced-motion: reduce) {
+  [data-aos] {
+    transition: none !important;
+    transform: none !important;
+    clip-path: none !important;
+    opacity: 1 !important;
+  }
+}

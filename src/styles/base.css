@@ -60,8 +60,15 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-bold leading-snug text-text-dark;
+  @apply font-bold leading-snug text-black;
 }
+/* Default "secondary" treatment for a heading's un-styled span/strong
+   child (the common AR<br>EN or plain-bold-emphasis pattern used
+   throughout the site). Matches the JADH typography hierarchy's English
+   heading color exactly, so a heading needs an explicit class ONLY when
+   it deviates from that default -- an instance that already sets its own
+   color (e.g. the Arabic portion, explicitly black) overrides this by
+   specificity as before. */
 h1,
 h2,
 h3,
@@ -69,7 +76,7 @@ h4,
 h5,
 h6 {
   span {
-    @apply text-text-light;
+    @apply text-muted-heading;
   }
 }
 
@@ -110,7 +117,7 @@ h4,
 h5,
 h6 {
   strong {
-    @apply opacity-60 font-medium;
+    @apply text-muted-heading font-medium;
   }
 }
 

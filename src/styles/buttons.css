@@ -21,3 +21,169 @@
 .btn-outline-secondary {
   @apply text-white hover:opacity-80 border-white bg-transparent;
 }
+
+/* === JADH pill CTA button ==============================================
+   ONE reusable button style for every real CTA/action button on the site
+   -- migrate new ones through the <Button /> component
+   (src/layouts/components/Button.astro) rather than hand-rolling another
+   button variant. A horizontal pill with the label inside, and a
+   circular "cap" attached to one end holding a minimal arrow -- the
+   circle sits inset by a small even margin (the pill's own end padding)
+   on every side so it reads as part of the pill, not a separate floating
+   button, matching the reference composition.
+
+   Two color variants cover every current section: a blue pill for
+   light/white backgrounds, a white pill for dark ones -- each pairs the
+   pill's own color with the opposite for the circle, so there's always
+   AA-safe contrast for both the label and the icon regardless of what's
+   behind the button.
+
+   RTL/LTR: logical (inline-start/end) padding plus an explicit `dir` on
+   the root element (set by the component per the label's language) means
+   the exact same markup mirrors correctly in both directions -- circle
+   trails left for Arabic labels, right for English ones -- without a
+   separate variant. --jadh-btn-shift (1 or -1, set inline by the
+   component from that same `dir`) drives the hover nudge direction
+   below. */
+.jadh-btn {
+  @apply inline-flex cursor-pointer items-center justify-start whitespace-nowrap rounded-full border-none font-semibold leading-none no-underline;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.jadh-btn:disabled {
+  @apply pointer-events-none cursor-not-allowed opacity-55;
+}
+
+.jadh-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.jadh-btn__circle {
+  @apply inline-flex shrink-0 items-center justify-center rounded-full;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s ease;
+}
+
+.jadh-btn__arrow {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jadh-btn:hover .jadh-btn__circle {
+  transform: translateX(calc(var(--jadh-btn-shift, 1) * 4px)) scale(1.06);
+}
+
+.jadh-btn:hover .jadh-btn__arrow {
+  transform: translateX(calc(var(--jadh-btn-shift, 1) * 3px));
+}
+
+/* Sizes: comfortable on desktop, a touch smaller (height/text/circle
+   all scale together) on mobile. */
+.jadh-btn--md {
+  height: 44px;
+  gap: 10px;
+  padding-inline-start: 20px;
+  padding-inline-end: 5px;
+  font-size: 13px;
+}
+.jadh-btn--md .jadh-btn__circle {
+  width: 34px;
+  height: 34px;
+}
+.jadh-btn--md .jadh-btn__arrow {
+  width: 16px;
+  height: 16px;
+}
+@media (min-width: 768px) {
+  .jadh-btn--md {
+    height: 52px;
+    gap: 14px;
+    padding-inline-start: 26px;
+    padding-inline-end: 6px;
+    font-size: 15px;
+  }
+  .jadh-btn--md .jadh-btn__circle {
+    width: 42px;
+    height: 42px;
+  }
+  .jadh-btn--md .jadh-btn__arrow {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Compact tier for tight contexts (header nav CTA, in-card list rows). */
+.jadh-btn--sm {
+  height: 36px;
+  gap: 8px;
+  padding-inline-start: 16px;
+  padding-inline-end: 4px;
+  font-size: 13px;
+}
+.jadh-btn--sm .jadh-btn__circle {
+  width: 28px;
+  height: 28px;
+}
+.jadh-btn--sm .jadh-btn__arrow {
+  width: 14px;
+  height: 14px;
+}
+
+/* Slightly fuller than --sm: same compact tier, a touch more substantial
+   (more padding, a bigger circle) without reaching --md. */
+.jadh-btn--sm-lg {
+  height: 44px;
+  gap: 10px;
+  padding-inline-start: 20px;
+  padding-inline-end: 6px;
+  font-size: 14px;
+}
+.jadh-btn--sm-lg .jadh-btn__circle {
+  width: 34px;
+  height: 34px;
+}
+.jadh-btn--sm-lg .jadh-btn__arrow {
+  width: 16px;
+  height: 16px;
+}
+
+.jadh-btn--blue {
+  background-color: #004eff;
+  color: #ffffff;
+}
+.jadh-btn--blue .jadh-btn__circle {
+  background-color: #ffffff;
+  color: #004eff;
+}
+.jadh-btn--blue:hover {
+  background-color: #0041d6;
+  box-shadow: 0 10px 28px rgba(0, 78, 255, 0.32);
+}
+
+.jadh-btn--white {
+  background-color: #ffffff;
+  color: #02005b;
+}
+.jadh-btn--white .jadh-btn__circle {
+  background-color: #004eff;
+  color: #ffffff;
+}
+.jadh-btn--white:hover {
+  background-color: #f2f5ff;
+  box-shadow: 0 10px 28px rgba(2, 0, 91, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jadh-btn,
+  .jadh-btn__circle,
+  .jadh-btn__arrow {
+    transition: none !important;
+  }
+  .jadh-btn:hover .jadh-btn__circle,
+  .jadh-btn:hover .jadh-btn__arrow {
+    transform: none !important;
+  }
+}

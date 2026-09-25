@@ -1,11 +1,11 @@
 ---
 # Banner
 banner:
-  title: "<span class='block text-[44px] md:text-[64px] leading-[1] font-bold tracking-[-0.03em] text-white'> جـادة الأفـق </span><span class='block mt-2 text-[24px] md:text-[40px] leading-[1.1] font-semibold tracking-[-0.02em] text-white/70'>حلـول تُحدث الفـرق </span> <span class='block mt-7 text-[15px] md:text-[35px] font-semibold tracking-[0.03em] uppercase text-white/90'>JADH AL OFOQ </span> <span class='block mt-1 text-[15px] md:text-[25px] leading-[1.2] font-semibold tracking-[0.01em] text-white/70'>Solutions That Move Business Forward </span>"
+  title: "<span class='block text-[30px] md:text-[56px] leading-[1] font-bold tracking-[-0.03em] text-white'>جــادة الأفــق</span><span class='block mt-3 md:mt-4 text-[15px] md:text-[24px] leading-none font-semibold tracking-[-0.01em] text-[#C9D2E3]'>حيث تلتقي الفرص بالحلول</span><span class='block font-semibold md:mt-3 text-[12px] md:text-[15px] leading-[1.3] tracking-[0.01em] text-white/55'>Where Opportunities Meet Solutions</span>"
   content: ""
-  image: "/images/hero-img.png"
+  image: ""
   button:
-    enable: true
+    enable: false
     label: "ابدء الان"
     link: "/contact"
   brands:
@@ -102,9 +102,9 @@ feature:
 about:
 
   title: "من نحن  <br> **About us**"
-  content: "نحن شركة متخصصة في تطوير الأعمال وتقديم الحلول المتكاملة عبر نموذج تشغيلي مرن يربط بين الكفاءة والشراكات وصناعة القيمة <br>We specialize in business development and integrated solutions that connect efficiency, partnerships, and value creation"
-  content_2: "نعمل على تصميم وإدارة الحلول التجارية والتشغيلية واللوجستية لتمكين شركائنا من تحقيق نتائج موثوقة وتجارب تنفيذ احترافية<br>We deliver commercial, operational, and logistics solutions that help our partners achieve reliable results and professional execution"
-  image: "/images/pattern-2.png"
+  content: "نحن شركة متخصصة في تطوير الأعمال وتقديم الحلول المتكاملة عبر نموذج تشغيلي مرن يربط بين الكفاءة والشراكات وصناعة القيمة، ونعمل على تصميم وإدارة الحلول التقنية واللوجستية والتشغيلية لتمكين شركائنا من تحقيق نتائج موثوقة وتنفيذ احترافي"
+  content_2: "We specialize in business development and integrated solutions through a flexible operating model that connects efficiency, partnerships, and value creation. We design and manage technology, logistics, and operational solutions to help our partners achieve reliable results and professional execution"
+  image: "/images/office/jadh-office.JPG"
   button:
     enable: true
     label: "معرفة المزيد "

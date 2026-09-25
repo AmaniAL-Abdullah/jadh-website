@@ -4,8 +4,13 @@
 }
 
 /* container */
+/* px-[22px] (a fixed value, not rem) on mobile: the root font-size shrinks
+   ~20% below the site's sm breakpoint (see html in base.css), so a rem-based
+   px-5 was rendering as ~16px there instead of its nominal 20px -- too close
+   to the edge. A fixed px value keeps mobile padding at a true ~20-24px
+   regardless of that root-size scaling, without touching sm:/2xl:. */
 .container {
-  @apply mx-auto max-w-[1160px]! px-5 sm:px-10 2xl:px-0;
+  @apply mx-auto max-w-[1160px]! px-[22px] sm:px-10 2xl:px-0;
 }
 
 /* social icons */
