@@ -55,7 +55,7 @@ const posts = await getSinglePage("blog");
     playsinline
     class="absolute inset-0 z-0 h-full w-full object-cover"
   >
-    <source src="/videos/hero-bg.mp4" type="video/mp4" />
+    <source src="/videos/hero-bgg.MP4" type="video/MP4" />
   </video>
   <div class="container relative z-10 flex flex-1 flex-col items-center justify-center">
     <div class="mx-auto max-w-xl text-center lg:max-w-2xl">
@@ -116,11 +116,10 @@ const posts = await getSinglePage("blog");
      this box with a responsive gap, instead of fixed padding stacking up
      to a height nothing was actually checking against the viewport. */
   .hero-gradient {
-    position: relative;
-    min-height: 100vh;
-    min-height: 100svh;
-    background-color: #071033;
-  }
+  position: relative;
+  min-height: calc(100svh + 80px);
+  background-color: #071033;
+}
 
   /* Dissolves the video into the About section's own background
      (#F6F7F9) -- contained inside the hero's own box (bottom: 0, never
@@ -138,42 +137,12 @@ const posts = await getSinglePage("blog");
          mean there is no single point where the rate of change visibly
          picks up or stops, so nothing in the fade itself reads as a
          line, only as air gradually thickening into the page. */
-  .hero-gradient::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 85%;
-    background: linear-gradient(
-  to bottom,
-  rgba(246, 247, 249, 0) 0%,
-  rgba(246, 247, 249, 0.02) 15%,
-  rgba(246, 247, 249, 0.06) 30%,
-  rgba(246, 247, 249, 0.14) 45%,
-  rgba(246, 247, 249, 0.28) 60%,
-  rgba(246, 247, 249, 0.48) 72%,
-  rgba(246, 247, 249, 0.70) 84%,
-  rgba(246, 247, 249, 0.90) 94%,
-  #f6f7f9 100%
-);
-    pointer-events: none;
-  }
 
-  @media (min-width: 768px) {
-    .hero-gradient::after {
-      height: 80%;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .hero-gradient::after {
-      height: 50%;
-    }
-  }
 </style>
 <!-- Banner -->
 <!-- about us -->
-<section class="relative overflow-hidden bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
-  <!-- Desktop/XL width matches the shared .container's rhythm (max-w-[1160px],
+<section class="relative z-10 -mt-20 overflow-hidden rounded-t-[80px] bg-[#F6F7F9] pt-24 pb-6 md:pb-9 lg:pb-12">
+    <!-- Desktop/XL width matches the shared .container's rhythm (max-w-[1160px],
        padding dropping to 0 at 2xl) so this composition's outer left/right
        edges line up with the Services section below -- mobile/tablet keep
        their own px-5/sm:px-10 padding against the wider base max-width,
