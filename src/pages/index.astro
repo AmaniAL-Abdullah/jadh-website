@@ -417,6 +417,9 @@ const reviewContent = splitBilingual(testimonial.data.content);
       min-height: 100svh;
       padding-top: 0;
       padding-bottom: 0;
+      /* The video now ends 40px above the hero's bottom edge; this strip is
+         the page colour the bottom fade already blends into, so no navy shows. */
+      background-image: linear-gradient(to bottom, transparent calc(100% - 40px), #f6f7f9 calc(100% - 40px));
     }
     .hero-gradient > video {
       /* Wider than the screen by 1/0.9, so it still covers edge to edge
@@ -425,7 +428,9 @@ const reviewContent = splitBilingual(testimonial.data.content);
       right: auto;
       width: 112%;
       max-width: none;
-      transform: scale(0.9);
+      /* translateY(-40px): the whole composition (this video + the text
+         group below) sits 40px higher. */
+      transform: translateY(-40px) scale(0.9);
       transform-origin: 50% 100%;
       -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%);
       mask-image: linear-gradient(to bottom, transparent 0%, #000 16%);
@@ -434,8 +439,8 @@ const reviewContent = splitBilingual(testimonial.data.content);
       flex: none;
       justify-content: flex-start;
       /* The clamp()ed type grows a little with width, so lift the group with it.
-         (-148px: the group sits 18px higher, for more room above the globe.) */
-      padding-top: calc(50svh - 148px - (100vw - 375px) * 0.45);
+         (-188px: 40px higher than before, moving with the video above.) */
+      padding-top: calc(50svh - 188px - (100vw - 375px) * 0.45);
     }
     .hero-gradient [data-globe-size] {
       height: 0;
@@ -459,6 +464,14 @@ const reviewContent = splitBilingual(testimonial.data.content);
       rgba(246, 247, 249, 0.65) 75%,
       #F6F7F9 100%
     );
+  }
+
+  /* Mobile: the video sits 40px higher, so its bottom fade moves up with it
+     (the strip below is the page colour the fade ends on). */
+  @media (max-width: 639.98px) {
+    .hero-gradient::after {
+      inset: auto 0 40px 0;
+    }
   }
 
 </style>

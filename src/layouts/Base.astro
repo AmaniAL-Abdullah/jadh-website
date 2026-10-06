@@ -68,18 +68,6 @@ const ogImage = /^https?:\/\//.test(ogImagePath)
 
     <ClientRouter />
 
-    <!-- Scroll-reveal safety net: [data-aos] content starts hidden, so if
-         JS is off (or AOS never initialises) it must show anyway. -->
-    <noscript>
-      <style>
-        [data-aos] {
-          opacity: 1 !important;
-          transform: none !important;
-          filter: none !important;
-          clip-path: none !important;
-        }
-      </style>
-    </noscript>
 
     <!-- author from config.json -->
     <meta name="author" content={config.metadata.meta_author} />
@@ -107,6 +95,19 @@ const ogImage = /^https?:\/\//.test(ogImagePath)
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    {/* Scroll-reveal safety net: [data-aos] content starts hidden, so if JS is
+       off it must show anyway. (Kept in the body: a <noscript><style> inside
+       <head> makes Astro emit the page's stylesheets after </body>.) */}
+    <noscript>
+      <style is:inline>
+        [data-aos] {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
     {/* google tag manager noscript */}
     {config.google_tag_manager.enable && <GoogleTagmanagerNoscript id={config.google_tag_manager.gtm_id} />}
     <TwSizeIndicator />
