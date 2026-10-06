@@ -28,7 +28,7 @@ const { title, button } = sectionData.data;
        below assigns the source shortly before the section scrolls into view
        (lighter 720p file on phones/tablets). -->
   <video
-    class:list={["pointer-events-none absolute inset-0 h-full w-full object-cover", unifiedHeading && "cta-home-video"]}
+    class:list={["cta-video pointer-events-none absolute inset-0 h-full w-full object-cover", unifiedHeading && "cta-home-video"]}
     autoplay
     muted
     loop
@@ -147,12 +147,18 @@ const { title, button } = sectionData.data;
     }
   }
 
-  /* Homepage CTA on phones only (< 640px): the background wave is masked to
-     a band at the very bottom so it never runs through the copy or button. */
+  /* Phones only (< 640px): the dotted wave is zoomed 1.8x from the bottom so
+     the dots read clearly (the video box is unchanged and clipped by the
+     section), and masked to the lower part of the section so it stays under
+     the copy and button. The mask is in the element's own (pre-zoom) space:
+     transparent 96px / opaque 34px above the bottom = ~173px / ~61px on
+     screen. */
   @media (max-width: 639.98px) {
-    .cta--home .cta-home-video {
-      -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - 72px), #000 calc(100% - 16px));
-      mask-image: linear-gradient(to bottom, transparent calc(100% - 72px), #000 calc(100% - 16px));
+    .cta-video {
+      transform: scale(1.8);
+      transform-origin: 50% 100%;
+      -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - 96px), #000 calc(100% - 34px));
+      mask-image: linear-gradient(to bottom, transparent calc(100% - 96px), #000 calc(100% - 34px));
     }
     /* Button: no override -- it keeps the base CTA size (40px pill, 30px
        circle), identical to the Contact page's. Same contained tap feedback. */
