@@ -117,6 +117,17 @@ const ogImage = /^https?:\/\//.test(ogImagePath)
     <script>
       import AOS from "aos";
       import "aos/dist/aos.css";
+
+      // Scroll reveals (AOS) under Astro's ClientRouter. AOS measures every
+      // element's trigger position when it (re)initialises. After a client-side
+      // swap the new page has not finished laying out at that moment (fonts,
+      // images, styles), so those positions are wrong and nothing below the
+      // hero ever reveals until a resize -- the page looks blank. So: start AOS
+      // once, then on every swap re-measure (now and again once layout settles),
+      // and keep a watchdog that reveals anything visible that AOS missed.
+      let started = false;
+      let watch: IntersectionObserver | null = null;
+
       // [data-aos-min-scroll="N"] (top-center placement only): on tall screens
       // content just below a short hero is already past the trigger line at
       // load. Raise the element's offset so it still waits for N px of scroll
@@ -133,16 +144,81 @@ const ogImage = /^https?:\/\//.test(ogImagePath)
           if (needed > base) el.setAttribute("data-aos-offset", String(Math.ceil(needed)));
         });
       }
-      function aosInit() {
+
+      // Every AOS refresh adds another scroll/resize listener, although they all
+      // read AOS's single current element list. Re-measure without letting it
+      // pile up a new set per navigation.
+      function remeasure() {
         holdUntilScrolled();
-        AOS.init({
-          duration: window.innerWidth < 640 ? 600 : 700,
-          once: true,
-        });
+        const add = window.addEventListener;
+        window.addEventListener = function (type: string, ...rest: unknown[]) {
+          if (type === "scroll" || type === "resize" || type === "orientationchange") return;
+          return (add as (...a: unknown[]) => void).call(window, type, ...rest);
+        } as typeof add;
+        try {
+          AOS.refreshHard();
+        } finally {
+          window.addEventListener = add;
+        }
       }
 
-      aosInit();
-      document.addEventListener("astro:after-swap", aosInit);
+      // Fail-safe: anything that has been on screen but never got revealed
+      // (AOS missed it for any reason) is revealed anyway -- content must never
+      // depend on the animation system. Waits a little longer when the user has
+      // not scrolled yet, so below-hero content still holds for the first scroll.
+      function watchVisible() {
+        watch?.disconnect();
+        watch = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const el = entry.target as HTMLElement;
+              if (!entry.isIntersecting || el.classList.contains("aos-animate")) return;
+              window.setTimeout(
+                () => {
+                  if (
+                    el.isConnected &&
+                    !el.classList.contains("aos-animate") &&
+                    el.getBoundingClientRect().top < window.innerHeight * 0.6
+                  ) {
+                    el.classList.add("aos-animate");
+                  }
+                },
+                window.scrollY > 40 ? 900 : 5000,
+              );
+            });
+          },
+          // Only elements already in the upper ~45% of the screen count: AOS
+          // triggers at or before mid-screen, so the watchdog never races it.
+          { rootMargin: "0px 0px -55% 0px" },
+        );
+        document.querySelectorAll("[data-aos]").forEach((el) => watch!.observe(el));
+      }
+
+      function startAos() {
+        if (!started) {
+          started = true;
+          holdUntilScrolled();
+          AOS.init({
+            duration: window.innerWidth < 640 ? 600 : 700,
+            once: true,
+            // The router replaces the whole body; we re-measure explicitly.
+            disableMutationObserver: true,
+          });
+        } else {
+          remeasure();
+        }
+        watchVisible();
+      }
+
+      startAos();
+      document.addEventListener("astro:after-swap", startAos);
+      document.addEventListener("astro:page-load", () => {
+        remeasure();
+        // Layout is final a moment later (fonts, images): measure again.
+        window.setTimeout(remeasure, 350);
+        window.setTimeout(remeasure, 1200);
+        document.fonts?.ready.then(remeasure);
+      });
     </script>
     <script is:inline>
       // If AOS has not tagged anything shortly after load, reveal the content.

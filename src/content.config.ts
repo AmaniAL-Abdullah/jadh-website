@@ -63,73 +63,6 @@ const aboutCollection = defineCollection({
   }),
 });
 
-const careerCollection = defineCollection({
-  loader: glob({
-    pattern: "**/*.{md,mdx}",
-    base: "src/content/career",
-  }),
-  schema: z.object({
-    ...commonFields,
-    location: z.string().optional(),
-    duration: z.string().optional(),
-    vacant: z.string().optional(),
-    salary: z.string().optional(),
-    content: z.string().optional(),
-    button: z
-      .object({
-        enable: z.boolean(),
-        link: z.string(),
-        label: z.string(),
-      })
-      .optional(),
-    about: z
-      .object({
-        image: z.string(),
-        stats: z.array(
-          z.object({
-            key: z.string(),
-            value: z.string(),
-          })
-        ),
-      })
-      .optional(),
-    why: z
-      .object({
-        title: z.string(),
-        content: z.string(),
-        points: z.array(
-          z.object({
-            title: z.string(),
-            content: z.string(),
-          })
-        ),
-      })
-      .optional(),
-    career: z
-      .object({
-        title: z.string(),
-        content: z.string(),
-      })
-      .optional(),
-  }),
-});
-
-const blogCollection = defineCollection({
-  loader: glob({
-    pattern: "**/*.{md,mdx}",
-    base: "src/content/blog",
-  }),
-  schema: z.object({
-    ...commonFields,
-    header_title: z.string().optional(),
-    homepage_title: z.string().optional(),
-    homepage_description: z.string().optional(),
-    cover_image: z.string().optional(),
-    author: z.string().optional(),
-    author_image: z.string().optional(),
-  }),
-});
-
 const contactCollection = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx}",
@@ -295,34 +228,13 @@ const termsCollection = defineCollection({
   }),
 });
 
-// Pages collection schema
-const pagesCollection = defineCollection({
-  loader: glob({
-    pattern: "elements.{md,mdx}",
-    base: "src/content/pages",
-  }),
-  schema: z.object({
-    ...commonFields,
-    button: z
-      .object({
-        enable: z.boolean(),
-        label: z.string(),
-        link: z.string(),
-      })
-      .optional(),
-  }),
-});
-
 export const collections = {
   about: aboutCollection,
-  career: careerCollection,
-  blog: blogCollection,
   contact: contactCollection,
   homepage: homeCollection,
   faq: faqCollection,
   testimonials: testimonialsCollection,
   services: serviceCollection,
-  pages: pagesCollection,
   callToAction: callToActionCollection,
   terms: termsCollection,
 };

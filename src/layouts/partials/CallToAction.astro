@@ -23,18 +23,23 @@ const { title, button } = sectionData.data;
   ]}
 >
 
-  <!-- Contact background video -->
+  <!-- Contact background video: far below the fold, so it is NOT downloaded
+       with the page. The poster (first frame) shows immediately; the script
+       below assigns the source shortly before the section scrolls into view
+       (lighter 720p file on phones/tablets). -->
   <video
     class:list={["pointer-events-none absolute inset-0 h-full w-full object-cover", unifiedHeading && "cta-home-video"]}
     autoplay
     muted
     loop
     playsinline
-    preload="metadata"
+    preload="none"
+    poster="/images/video-posters/contact-loop.jpg"
+    data-lazy-video
+    data-src-desktop="/videos/contact-loop.mp4"
+    data-src-mobile="/videos/contact-loop-mobile.mp4"
     aria-hidden="true"
-  >
-    <source src="/videos/contact-loop.mp4" type="video/mp4" />
-  </video>
+  ></video>
 
   <!-- Content -->
   <div class="container relative z-10 text-center text-white">
@@ -163,3 +168,82 @@ const { title, button } = sectionData.data;
     }
   }
 </style>
+
+<script>
+  // Lazy background video: load + play when the section is within ~one screen
+  // of the viewport, pause when it is far away. Document-level listeners are
+  // registered once per document (module scripts run once); only the observer
+  // is rebuilt per page, so nothing is duplicated across Astro navigations.
+  const SELECTOR = "video[data-lazy-video]";
+  let observer: IntersectionObserver | null = null;
+
+  const lightVideos = () => window.matchMedia("(max-width: 1023.98px)").matches;
+  const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const play = (v: HTMLVideoElement) => {
+    v.play().catch(() => {
+      // Not ready yet, or paused to save power: retry once it can play.
+      v.addEventListener("canplay", () => v.dataset.want === "1" && v.play().catch(() => {}), { once: true });
+    });
+  };
+
+  const activate = (v: HTMLVideoElement) => {
+    v.dataset.want = "1";
+    if (!v.hasAttribute("src")) {
+      const src = lightVideos() ? v.dataset.srcMobile : v.dataset.srcDesktop;
+      if (!src) return;
+      v.setAttribute("src", src);
+      v.preload = "auto";
+      // Resume if the browser (e.g. iOS Safari) suspends playback on its own.
+      v.addEventListener("pause", () => {
+        if (v.dataset.want === "1" && !v.ended && document.visibilityState === "visible") {
+          v.play().catch(() => {});
+        }
+      });
+      v.load();
+    }
+    if (v.paused) play(v);
+  };
+
+  const release = (v: HTMLVideoElement) => {
+    v.dataset.want = "0";
+    v.pause();
+  };
+
+  document.addEventListener("astro:before-swap", () => {
+    observer?.disconnect();
+    observer = null;
+    document.querySelectorAll<HTMLVideoElement>(SELECTOR).forEach((v) => {
+      v.dataset.want = "0";
+      v.pause();
+      v.removeAttribute("src");
+      v.load();
+    });
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    document.querySelectorAll<HTMLVideoElement>(SELECTOR).forEach((v) => {
+      if (v.dataset.want === "1" && v.paused) play(v);
+    });
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    observer?.disconnect();
+    observer = null;
+    const videos = document.querySelectorAll<HTMLVideoElement>(SELECTOR);
+    // Reduced motion: keep the static poster, never download the video.
+    if (!videos.length || reducedMotion()) return;
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const v = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) activate(v);
+          else if (v.hasAttribute("src")) release(v);
+        });
+      },
+      { rootMargin: "100% 0px" },
+    );
+    videos.forEach((v) => observer!.observe(v));
+  });
+</script>

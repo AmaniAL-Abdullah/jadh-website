@@ -5,8 +5,7 @@ import { markdownify } from "@/lib/utils/textConverter";
 import CallToAction from "@/partials/CallToAction.astro";
 import Testimonial from "@/partials/Testimonial.astro";
 import { Icon } from "astro-icon/components";
-import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
-import BlogCard from "@/components/BlogCard.astro";
+import { getListPage } from "@/lib/contentParser.astro";
 import ParticleGlobe from "@/helpers/ParticleGlobe";
 import ServiceSlider from "@/components/homepage/ServiceSlider.astro";
 import Button from "@/components/Button.astro";
@@ -37,9 +36,6 @@ const serviceTitle = splitBilingual(service.title);
 const testimonial = await getListPage("testimonials", "testimonial");
 const reviewTitle = splitBilingual(testimonial.data.homepage_title);
 const reviewContent = splitBilingual(testimonial.data.content);
-const postIndex = await getListPage("blog", "-index");
-const { homepage_title, homepage_description } = postIndex.data;
-const posts = await getSinglePage("blog");
 ---
 
 <Base>
@@ -57,13 +53,20 @@ const posts = await getSinglePage("blog");
        When the intro ends the loop starts and the intro is hidden only after
        the loop is really producing frames, so the swap never shows a gap
        (see the script after this section). -->
+  <!-- Posters are the first frame of each clip, so the Hero always has its
+       real background before any video data arrives. Sources are chosen per
+       device (lighter 720p files below 1024px) and assigned by script: the
+       intro immediately, the loop only once the intro is ready, so the two
+       never fight for bandwidth. -->
   <video
     data-hero-loop
     muted
     loop
     playsinline
-    preload="auto"
-    src="/videos/hero-loop.mp4"
+    preload="metadata"
+    poster="/images/video-posters/hero-loop.jpg"
+    data-src-desktop="/videos/hero-loop.mp4"
+    data-src-mobile="/videos/hero-loop-mobile.mp4"
     class="absolute inset-0 z-0 h-full w-full object-cover"
   ></video>
   <video
@@ -71,10 +74,31 @@ const posts = await getSinglePage("blog");
     muted
     playsinline
     preload="auto"
-    src="/videos/hero-intro.mp4"
+    poster="/images/video-posters/hero-intro.jpg"
+    data-src-desktop="/videos/hero-intro.mp4"
+    data-src-mobile="/videos/hero-intro-mobile.mp4"
     class="absolute inset-0 z-0 h-full w-full object-cover"
   ></video>
-  <div class="container relative z-10 flex flex-1 flex-col items-center justify-center max-sm:translate-y-5">
+  <script is:inline>
+    // Start the intro download as early as possible (before the page's module
+    // scripts run). The same selection also happens in the lifecycle script
+    // below for client-side navigations.
+    (function () {
+      var v = document.querySelector("[data-hero-intro]");
+      if (
+        v &&
+        !v.getAttribute("src") &&
+        !window.__heroIntroStarted &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        v.setAttribute(
+          "src",
+          window.matchMedia("(max-width: 1023.98px)").matches ? v.dataset.srcMobile : v.dataset.srcDesktop,
+        );
+      }
+    })();
+  </script>
+  <div class="container relative z-10 flex flex-1 flex-col items-center justify-center min-[640px]:pb-[50px] max-sm:translate-y-5">
     <div class="mx-auto max-w-xl text-center lg:max-w-2xl">
       <!-- Eyebrow + dot reveal together as one element. -->
       <div
@@ -174,11 +198,21 @@ const posts = await getSinglePage("blog");
       return;
     }
 
-    // Fresh elements from a client-side swap: start their loading properly.
-    if (swapped) {
+    // Pick the right file for this device. The intro normally already has its
+    // src (assigned inline, before the page scripts); after a client-side swap
+    // (or if that inline step did not run) assign it here and start loading.
+    const lightVideos = window.matchMedia("(max-width: 1023.98px)").matches;
+    const sourceFor = (v: HTMLVideoElement) =>
+      (lightVideos ? v.dataset.srcMobile : v.dataset.srcDesktop) ?? "";
+
+    // The loop gets its src only once the intro is ready (or needed), so the
+    // two clips never compete for bandwidth while the page is loading.
+    const ensureLoopSrc = () => {
+      if (loop.hasAttribute("src")) return;
+      loop.setAttribute("src", sourceFor(loop));
+      loop.preload = "auto";
       loop.load();
-      intro.load();
-    }
+    };
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let revealed = false;
@@ -246,6 +280,7 @@ const posts = await getSinglePage("blog");
     const activateLoop = () => {
       if (loopActivated || !loop.isConnected) return;
       loopActivated = true;
+      ensureLoopSrc();
       wantLoop(true);
 
       let switched = false;
@@ -282,13 +317,26 @@ const posts = await getSinglePage("blog");
     if (reduceMotion || win.__heroIntroStarted) {
       hideIntro();
       reveal(true);
+      // Reduced motion keeps the static poster: no loop download at all.
       if (!reduceMotion) {
+        ensureLoopSrc();
         wantLoop(true);
         startLoop();
       }
       return;
     }
     win.__heroIntroStarted = true;
+
+    // The intro only plays on the first visit and never under reduced motion,
+    // so only then does it need its file.
+    const introNeedsSrc = !intro.hasAttribute("src");
+    if (introNeedsSrc) intro.setAttribute("src", sourceFor(intro));
+    if (swapped || introNeedsSrc) intro.load();
+
+    // Prepare the loop as soon as the intro can play through (or after a short
+    // grace period), so it is ready by the time the intro ends.
+    intro.addEventListener("canplaythrough", ensureLoopSrc, { once: true });
+    window.setTimeout(ensureLoopSrc, 1500);
 
     intro.addEventListener("ended", activateLoop, { once: true });
     // If the intro cannot load or play, fall back to the loop + content.
@@ -328,6 +376,17 @@ const posts = await getSinglePage("blog");
 
   .hero-reveal.is-instant {
     transition: none;
+  }
+
+  /* Fail-safe: if the reveal script never runs, the hero text still appears. */
+  .hero-reveal:not(.is-in) {
+    animation: heroRevealFailsafe 600ms ease 8s forwards;
+  }
+  @keyframes heroRevealFailsafe {
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -375,8 +434,8 @@ const posts = await getSinglePage("blog");
       flex: none;
       justify-content: flex-start;
       /* The clamp()ed type grows a little with width, so lift the group with it.
-         (-130px = the original -190px, lowered by 60px for more room under the header.) */
-      padding-top: calc(50svh - 130px - (100vw - 375px) * 0.45);
+         (-148px: the group sits 18px higher, for more room above the globe.) */
+      padding-top: calc(50svh - 148px - (100vw - 375px) * 0.45);
     }
     .hero-gradient [data-globe-size] {
       height: 0;
@@ -659,65 +718,41 @@ const posts = await getSinglePage("blog");
         data-aos-delay="100"
       >
         {
-          brandLogos.map((brand) => (
-            <div class="flex w-40 items-center justify-center grayscale opacity-60 transition duration-300 hover:opacity-100 hover:grayscale-0">
+          brandLogos.map((brand) => {
+            // Athar Studio (6_HQ.png): drawn ~11% smaller inside its unchanged
+            // slot (a transform, so the grid is not affected) and linked to
+            // its site. The link adds no visible styling.
+            const isAthar = brand.endsWith("/6_HQ.png");
+            const logo = (
               <ImageMod
                 src={brand}
-                alt="Company Logo"
-                class="max-h-14 w-auto max-w-full object-contain md:max-h-20 lg:max-h-24"
+                alt={isAthar ? "Athar Studio" : "Company Logo"}
+                class={`max-h-14 w-auto max-w-full object-contain md:max-h-20 lg:max-h-24${isAthar ? " scale-[0.89]" : ""}`}
                 height={96}
               />
-            </div>
-          ))
+            );
+            return (
+              <div class="flex w-40 items-center justify-center grayscale opacity-60 transition duration-300 hover:opacity-100 hover:grayscale-0">
+                {isAthar ? (
+                  <a
+                    href="https://athar-studios.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex max-w-full items-center justify-center"
+                  >
+                    {logo}
+                  </a>
+                ) : (
+                  logo
+                )}
+              </div>
+            );
+          })
         }
       </div>
     </div>
   </section>
   <!-- brand -->
-
-  <!-- blog -->
-  <!--
-  <section class="pb-0 section">
-    <div class="container">
-      <div class="flex flex-col gap-14">
-        <div class="justify-center row">
-          <div class="lg:col-8">
-            <h2
-              class="pb-4 text-center"
-              data-aos="fade-up-sm"
-              set:html={markdownify(homepage_title!)}
-            />
-            <p
-              class="text-center"
-              data-aos="fade-up-sm"
-              set:html={markdownify(homepage_description!)}
-            />
-          </div>
-        </div>
-        <div class="row g-4">
-          {
-            posts.map((post, i: number) => (
-              <div
-                class="relative sm:col-6 lg:col-4 group"
-                data-aos="fade-up-sm"
-                data-aos-delay={i * 100}
-              >
-                <BlogCard post={post} />
-              </div>
-            ))
-          }
-        </div>
-        
-        <div class="inline-block text-center">
-          <a class="btn btn-outline-primary" href="/blog">
-            Read All Articles
-          </a>
-        </div>
-        -->
-      </div>
-    </div>
-  </section>
-  <!-- blog -->
 
   <CallToAction unifiedHeading />
 </Base>

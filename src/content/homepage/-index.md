@@ -11,10 +11,10 @@ banner:
   brands:
     - "/images/company-logo/1_HQ.png"
     - "/images/company-logo/2_HQ.png"
-    - "/images/company-logo/3_HQ.png"
+    - "/images/company-logo/6_HQ.png"
     - "/images/company-logo/4_HQ.png"
     - "/images/company-logo/5_HQ.png"
-    - "/images/company-logo/6_HQ.png"
+    - "/images/company-logo/3_HQ.png"
     - "/images/company-logo/7_HQ.png"
     - "/images/company-logo/8_HQ.png"
     - "/images/company-logo/9_HQ.png"
