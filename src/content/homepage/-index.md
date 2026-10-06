@@ -1,7 +1,7 @@
 ---
 # Banner
 banner:
-  title: "<span class='block text-[30px] md:text-[56px] leading-[1] font-bold tracking-[-0.03em] text-white'>جــادة الأفــق</span><span class='block mt-3 md:mt-4 text-[15px] md:text-[24px] leading-none font-semibold tracking-[-0.01em] text-[#C9D2E3]'>حيث تلتقي الفرص بالحلول</span><span class='block font-semibold md:mt-3 text-[12px] md:text-[15px] leading-[1.3] tracking-[0.01em] text-white/55'>Where Opportunities Meet Solutions</span>"
+  title: "<span class='hero-reveal block text-[30px] max-sm:text-[clamp(38px,10vw,46px)] max-sm:leading-[1.05] md:text-[64px] leading-[1] font-bold tracking-[-0.03em] text-white' style='--hero-reveal-delay: 70ms'>جــادة الأفــق</span><span class='hero-reveal block mt-2.5 max-sm:mt-[11px] md:mt-3 text-[15px] max-sm:text-[clamp(20px,5.5vw,24px)] max-sm:leading-[1.3] md:text-[24px] leading-none font-semibold tracking-[-0.01em] text-[#C9D2E3]' style='--hero-reveal-delay: 140ms'>حيث تلتقي الفرص بالحلول</span><span class='hero-reveal block font-semibold mt-1 max-sm:mt-[6px] md:mt-2 text-[12px] max-sm:text-[clamp(14px,4vw,17px)] max-sm:leading-[1.35] md:text-[15px] leading-[1.3] tracking-[0.01em] text-white/55' style='--hero-reveal-delay: 210ms'>Where Opportunities Meet Solutions</span>"
   content: ""
   image: ""
   button:

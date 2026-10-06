@@ -143,3 +143,387 @@
   @apply prose-tr:border-border;
   @apply prose-td:relative prose-td:z-10 prose-td:px-3 prose-td:py-[18px];
 }
+
+/* Micro brand accent used beside eyebrow labels: a small flat solid
+   #034EFF circle. No gradient, glow, shadow, or animation. */
+.jadh-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #034eff;
+}
+@media (min-width: 768px) {
+  .jadh-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Homepage section heading system (see SectionHeading.astro): the single
+   source of truth for eyebrow / Arabic title / English title sizes and
+   spacing in every homepage section. Only colours differ between the light
+   and dark variants. Fixed sizes per breakpoint (px, no viewport scaling),
+   so nothing grows on large screens. */
+.section-heading {
+  --sh-ar: 32px;
+  --sh-en: 20px;
+  --sh-eyebrow: 10.5px;
+  /* Gap from the end of the heading group to the section's content. */
+  --sh-gap: 36px;
+  margin-bottom: var(--sh-gap);
+}
+@media (min-width: 640px) {
+  .section-heading {
+    --sh-ar: 36px;
+    --sh-en: 24px;
+    --sh-eyebrow: 10px;
+    --sh-gap: 48px;
+  }
+}
+@media (min-width: 1024px) {
+  .section-heading {
+    --sh-ar: 42px;
+    --sh-en: 28px;
+    --sh-gap: 64px;
+  }
+}
+.section-heading--right {
+  text-align: right;
+}
+.section-heading--center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.section-heading__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: var(--sh-eyebrow);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted-heading);
+}
+.section-heading .jadh-dot {
+  width: 6px;
+  height: 6px;
+}
+.section-heading--right .section-heading__eyebrow {
+  justify-content: flex-end;
+}
+.section-heading--center .section-heading__eyebrow {
+  justify-content: center;
+}
+.section-heading__title {
+  display: block;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+.section-heading__ar {
+  display: block;
+  font-size: var(--sh-ar);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #000;
+}
+.section-heading__en {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 4px;
+  font-size: var(--sh-en);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-muted-heading);
+}
+.section-heading--right .section-heading__en {
+  margin-left: auto;
+}
+.section-heading--center .section-heading__en {
+  margin-left: auto;
+  margin-right: auto;
+}
+.section-heading--dark .section-heading__eyebrow {
+  color: rgba(255, 255, 255, 0.7);
+}
+.section-heading--dark .jadh-dot {
+  background-color: #ffffff;
+}
+.section-heading--dark .section-heading__ar {
+  color: #ffffff;
+}
+.section-heading--dark .section-heading__en {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* About lives inside a fixed-height card, so it keeps its compact internal
+   rhythm instead of the full section gap. */
+.section-heading.section-heading--compact {
+  --sh-gap: 30px;
+}
+
+/* Contact CTA only: a slightly more substantial heading composition. The
+   shared sizes above are untouched; only this variant overrides them. */
+.section-heading.section-heading--cta {
+  --sh-ar: 34px;
+  --sh-en: 23px;
+}
+@media (min-width: 640px) {
+  .section-heading.section-heading--cta {
+    --sh-ar: 40px;
+    --sh-en: 27px;
+  }
+}
+@media (min-width: 1024px) {
+  .section-heading.section-heading--cta {
+    --sh-ar: 48px;
+    --sh-en: 32px;
+  }
+}
+
+/* Homepage Contact CTA on phones only (< 640px): the same heading scale as
+   the Contact page's own CTA (one 26.9px / 700 / snug-leading size for both
+   the Arabic and the English line, 12.8px below the pair). Desktop/tablet
+   values above are untouched. */
+@media (max-width: 639.98px) {
+  .section-heading.section-heading--cta {
+    --sh-ar: var(--text-h2-sm, 26.92px);
+    --sh-en: var(--text-h2-sm, 26.92px);
+    --sh-eyebrow: 10.5px;
+    --sh-gap: 12.8px;
+  }
+  .section-heading--cta .section-heading__eyebrow {
+    margin-bottom: 16px;
+    letter-spacing: 0.22em;
+  }
+  .section-heading--cta .section-heading__ar,
+  .section-heading--cta .section-heading__en {
+    line-height: 1.375;
+  }
+  .section-heading--cta .section-heading__en {
+    margin-top: 0;
+    color: #ffffff;
+  }
+}
+
+/* Phones only (< 640px): long English titles wrap before they can become as
+   wide as the Arabic title above them. */
+@media (max-width: 639.98px) {
+  .section-heading__en {
+    max-width: 15em;
+  }
+}
+
+/* Phones only: long Arabic headings (Solutions, Values) a touch smaller. */
+@media (max-width: 639.98px) {
+  .section-heading.section-heading--long {
+    --sh-ar: 29px;
+  }
+}
+
+/* Shared vertical rhythm for inner-page sections: the same values the
+   homepage sections use (72px on phones, then 2rem / 2.25rem / 3rem). */
+.section-y {
+  padding-block: 72px;
+}
+@media (min-width: 640px) {
+  .section-y {
+    padding-block: 2rem;
+  }
+}
+@media (min-width: 768px) {
+  .section-y {
+    padding-block: 2.25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .section-y {
+    padding-block: 3rem;
+  }
+}
+/* A heading that sits inside a row with its own spacing (e.g. beside a
+   divider line) takes no bottom margin from the shared token. */
+.section-heading.section-heading--flush {
+  margin-bottom: 0;
+}
+
+/* Inner-page hero (see PageHero.astro). The About and Services heroes share
+   every value below: one background, one type scale, one rhythm. */
+.page-hero {
+  background-color: #f8f9fc;
+  padding-top: 4rem;
+  padding-bottom: 40px;
+}
+@media (min-width: 640px) {
+  .page-hero {
+    padding-bottom: 2rem;
+  }
+}
+@media (min-width: 768px) {
+  .page-hero {
+    padding-bottom: 2.25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .page-hero {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+}
+/* Hero -> first content section. The hero keeps its own bottom padding;
+   the first section below it adds the rest, so the interval between the
+   hero's last line and the first heading / composition is one deliberate
+   value: ~72px phones, ~90px tablets, ~120px desktop. Padding only -- no
+   spacer elements. */
+.section-y.section-y--after-hero {
+  padding-top: 32px;
+}
+@media (min-width: 640px) {
+  .section-y.section-y--after-hero {
+    padding-top: 64px;
+  }
+}
+@media (min-width: 768px) {
+  .section-y.section-y--after-hero {
+    padding-top: 54px;
+  }
+}
+@media (min-width: 1024px) {
+  .section-y.section-y--after-hero {
+    padding-top: 72px;
+  }
+}
+.page-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-muted-heading);
+}
+.page-hero__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+.page-hero__ar {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #000;
+}
+.page-hero__en {
+  display: block;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: var(--color-muted-heading);
+}
+@media (min-width: 768px) {
+  .page-hero__ar {
+    font-size: 44px;
+  }
+  .page-hero__en {
+    margin-top: 10px;
+    font-size: 22px;
+  }
+}
+.page-hero__copy {
+  margin-top: 20px;
+  line-height: 1.8;
+}
+@media (min-width: 1024px) {
+  .page-hero__copy {
+    margin-top: 28px;
+  }
+}
+.page-hero__copy p {
+  margin: 0;
+}
+.page-hero__copy-ar {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+}
+.page-hero__copy-en {
+  margin-top: 4px !important;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-muted-body);
+}
+@media (min-width: 1024px) {
+  .page-hero__copy-ar {
+    font-size: 18px;
+  }
+  .page-hero__copy-en {
+    font-size: 15px;
+  }
+}
+/* Phones: the supporting copy steps clearly down from the titles (28px AR /
+   15px EN) -- a compact Arabic line, then a smaller muted English line --
+   on a slightly narrower measure so lines don't run edge to edge. */
+@media (max-width: 639.98px) {
+  .page-hero__copy {
+    margin-top: 24px;
+    max-width: 330px;
+  }
+  .page-hero__copy-ar {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .page-hero__copy-en {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+/* A page-hero button follows the copy with the same rhythm everywhere. */
+.page-hero__inner > :where(a, button) {
+  margin-top: 24px;
+}
+
+/* One subtle entrance for page-hero content: fade, a short rise and a
+   touch of blur. Each element sets its own --d (delay) and --t (duration)
+   inline, so the hero reads in order: eyebrow, titles, then copy. */
+.pg-reveal {
+  --pg-y: 18px;
+  --pg-blur: 5px;
+  animation: pgReveal var(--t, 650ms) cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@media (max-width: 639.98px) {
+  .pg-reveal {
+    --pg-y: 14px;
+    --pg-blur: 3px;
+  }
+}
+@keyframes pgReveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--pg-y));
+    filter: blur(var(--pg-blur));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-reveal {
+    animation: none;
+  }
+}

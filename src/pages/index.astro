@@ -10,6 +10,8 @@ import BlogCard from "@/components/BlogCard.astro";
 import ParticleGlobe from "@/helpers/ParticleGlobe";
 import ServiceSlider from "@/components/homepage/ServiceSlider.astro";
 import Button from "@/components/Button.astro";
+import IntroOverlay from "@/components/IntroOverlay.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
 
 const homepage = await getListPage("homepage", "-index");
 const { banner, service, feature, about } = homepage.data;
@@ -25,10 +27,12 @@ const splitBilingual = (s: string) => {
   const parts = s.split("<br>");
   return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
 };
+const plain = (v: string) => v.replace(/\*\*/g, "").trim();
+const aboutTitle = splitBilingual(about.title);
+const featureTitle = splitBilingual(feature.title);
 const aboutContent = splitBilingual(about.content);
 const aboutContent2 = splitBilingual(about.content_2);
 const serviceTitle = splitBilingual(service.title);
-const featureContent = splitBilingual(feature.content);
 
 const testimonial = await getListPage("testimonials", "testimonial");
 const reviewTitle = splitBilingual(testimonial.data.homepage_title);
@@ -48,30 +52,53 @@ const posts = await getSinglePage("blog");
      fixed margin, so the same markup adapts cleanly from short mobile
      viewports up to large desktop ones. -->
 <section class="hero-gradient relative flex flex-col overflow-hidden pt-16 pb-10 md:pt-20 md:pb-12 lg:pt-28 lg:pb-16">
+  <!-- Two stacked videos in the exact same box. The loop sits underneath,
+       preloaded and paused on its first frame; the intro plays once on top.
+       When the intro ends the loop starts and the intro is hidden only after
+       the loop is really producing frames, so the swap never shows a gap
+       (see the script after this section). -->
   <video
-    autoplay
+    data-hero-loop
     muted
     loop
     playsinline
+    preload="auto"
+    src="/videos/hero-loop.mp4"
     class="absolute inset-0 z-0 h-full w-full object-cover"
-  >
-    <source src="/videos/hero-bgg.MP4" type="video/MP4" />
-  </video>
-  <div class="container relative z-10 flex flex-1 flex-col items-center justify-center">
+  ></video>
+  <video
+    data-hero-intro
+    muted
+    playsinline
+    preload="auto"
+    src="/videos/hero-intro.mp4"
+    class="absolute inset-0 z-0 h-full w-full object-cover"
+  ></video>
+  <div class="container relative z-10 flex flex-1 flex-col items-center justify-center max-sm:translate-y-5">
     <div class="mx-auto max-w-xl text-center lg:max-w-2xl">
+      <!-- Eyebrow + dot reveal together as one element. -->
+      <div
+        class="hero-reveal mb-[16px] flex items-center justify-center gap-2.5 max-sm:mb-[22px]"
+        style="--hero-reveal-delay: 0ms"
+      >
+        <span class="text-xs font-semibold uppercase tracking-[0.28em] text-white/70 max-sm:text-[12px] md:text-[13px]">
+          JADH AL OFOQ
+        </span>
+        <span class="jadh-dot" aria-hidden="true"></span>
+      </div>
+
+      <!-- Title lines are revealed individually (their classes live in the
+           banner markup itself), so the h1 is not a reveal element. -->
       <h1
         class="leading-[1.05] tracking-[-0.03em]"
-        data-aos="fade-up-sm"
-        data-aos-delay="50"
         set:html={markdownify(banner.title)}
       />
 
       {
         banner.content && (
           <p
-            class="pt-5 text-[17px] leading-[1.9] font-medium text-white/70"
-            data-aos="fade-up-sm"
-            data-aos-delay="100"
+            class="hero-reveal pt-5 text-[17px] leading-[1.9] font-medium text-white/70"
+            style="--hero-reveal-delay: 250ms"
             set:html={markdownify(banner.content)}
           />
         )
@@ -79,7 +106,7 @@ const posts = await getSinglePage("blog");
 
       {
         banner.button.enable && (
-          <div class="inline-block pt-6" data-aos="fade-up-sm" data-aos-delay="150">
+          <div class="hero-reveal inline-block pt-6" style="--hero-reveal-delay: 280ms">
             <Button href={banner.button.link} label={banner.button.label} variant="white" />
           </div>
         )
@@ -95,53 +122,290 @@ const posts = await getSinglePage("blog");
       data-globe-size
       class="relative z-0 mt-10 flex h-[150px] w-[150px] items-center justify-center md:mt-14 md:h-[210px] md:w-[210px] lg:mt-12 lg:h-[260px] lg:w-[260px]"
     >
-      <ParticleGlobe client:only="react" />
     </div>
   </div>
 </section>
 
-<style>
-  /* Hero sizing: fills the viewport without ever exceeding it (so
-     scrolling only ever starts at About, never mid-hero) using
-     min-height rather than a fixed height, so genuinely tall content
-     still isn't cropped -- it would simply grow past 100svh instead of
-     overflowing a hard cap. `svh` (small viewport height) is the
-     deliberate choice over plain `vh`: on mobile, `vh` includes space the
-     browser's own address bar can cover/uncover, which is exactly what
-     causes a hero that "should" fit to still trigger a few extra pixels
-     of scroll; `svh` accounts for that. Plain `vh` first as a fallback
-     for the handful of browsers without `svh` support. flex/flex-col
-     (set as Tailwind classes on the section itself) + flex-1 + justify-
-     center on the inner container centers the text+globe group inside
-     this box with a responsive gap, instead of fixed padding stacking up
-     to a height nothing was actually checking against the viewport. */
-  .hero-gradient {
-  position: relative;
-  min-height: calc(100svh + 80px);
-  background-color: #071033;
-}
+<script>
+  // Hero video sequence: hero-intro.mp4 plays once (Hero content hidden),
+  // then hero-loop.mp4 takes over and the content is revealed. The intro's
+  // native `ended` event is the only trigger -- no timeouts guess its length.
+  //
+  // Navigation lifecycle (Astro ClientRouter): the homepage's <video>
+  // elements are created by the router's swap, and a video that was
+  // inserted that way never starts its resource selection ("no supported
+  // sources" on the first play()). So after any swap we call load() on the
+  // fresh elements, and before leaving the page we release the old ones
+  // (pause + drop src) so nothing keeps decoding in the background.
+  const win = window as Window & { __heroIntroStarted?: boolean };
+  const heroVideos = () =>
+    document.querySelectorAll<HTMLVideoElement>("[data-hero-loop], [data-hero-intro]");
 
-  /* Dissolves the video into the About section's own background
-     (#F6F7F9) -- contained inside the hero's own box (bottom: 0, never
-     bled past it -- see the note above about why that matters for the
-     scrollbar), but now sized and eased so the transition itself has no
-     perceptible edge anywhere inside it:
-       - Tall: 78-85% of the hero's own height, so the fade is already
-         present well above the globe, not just a strip at the very
-         bottom.
-       - Eased with a smoothstep curve (11 stops following 3t^2-2t^3
-         rather than a plain linear ramp), which is zero-slope at BOTH
-         ends. A linear or even "ease-ish" ramp still has some minimum
-         rate of change at its start/end, and that's exactly what a
-         human eye reads as an edge -- smoothstep's flat tangents there
-         mean there is no single point where the rate of change visibly
-         picks up or stops, so nothing in the fade itself reads as a
-         line, only as air gradually thickening into the page. */
+  let cameFromSwap = false;
+
+  // Module scripts run once per document, so these are registered exactly
+  // once -- never per page visit.
+  document.addEventListener("astro:before-swap", () => {
+    heroVideos().forEach((v) => {
+      v.dataset.wantPlay = "0";
+      v.removeAttribute("src");
+      v.pause();
+      v.load();
+    });
+  });
+  document.addEventListener("astro:after-swap", () => {
+    cameFromSwap = true;
+  });
+  document.addEventListener("visibilitychange", () => {
+    const loop = document.querySelector<HTMLVideoElement>("[data-hero-loop]");
+    if (loop && document.visibilityState === "visible" && loop.dataset.wantPlay === "1" && loop.paused) {
+      loop.play().catch(() => {});
+    }
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    const loop = document.querySelector<HTMLVideoElement>("[data-hero-loop]");
+    const intro = document.querySelector<HTMLVideoElement>("[data-hero-intro]");
+    const content = document.querySelectorAll<HTMLElement>(".hero-reveal");
+    const swapped = cameFromSwap;
+    cameFromSwap = false;
+    if (!loop || !intro) {
+      content.forEach((el) => el.classList.add("is-in", "is-instant"));
+      return;
+    }
+
+    // Fresh elements from a client-side swap: start their loading properly.
+    if (swapped) {
+      loop.load();
+      intro.load();
+    }
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let revealed = false;
+    let loopActivated = false;
+    const wantLoop = (on: boolean) => {
+      loop.dataset.wantPlay = on ? "1" : "0";
+    };
+
+    // Resume the loop if the browser pauses it on its own while it should
+    // be playing (power saving, hidden tab), and retry once if its load fails.
+    let loopRetried = false;
+    loop.addEventListener("error", () => {
+      if (loopRetried || !loop.hasAttribute("src")) return;
+      loopRetried = true;
+      loop.load();
+      if (loop.dataset.wantPlay === "1") loop.play().catch(() => {});
+    });
+    loop.addEventListener("pause", () => {
+      if (
+        loop.dataset.wantPlay === "1" &&
+        loop.hasAttribute("src") &&
+        document.visibilityState === "visible"
+      ) {
+        loop.play().catch(() => {});
+      }
+    });
+
+    // Start the loop; if the browser rejects the first attempt (media not
+    // ready yet, or paused to save power) try again once it can play.
+    const startLoop = () => {
+      if (!loop.isConnected || loop.dataset.wantPlay !== "1") return;
+      loop.play().catch(() => {
+        loop.addEventListener(
+          "canplay",
+          () => {
+            if (loop.dataset.wantPlay === "1" && loop.paused) loop.play().catch(() => {});
+          },
+          { once: true },
+        );
+        window.setTimeout(() => {
+          if (loop.isConnected && loop.dataset.wantPlay === "1" && loop.paused) {
+            loop.play().catch(() => {});
+          }
+        }, 700);
+      });
+    };
+
+    const hideIntro = () => {
+      intro.pause();
+      intro.style.visibility = "hidden";
+    };
+
+    const reveal = (instant: boolean) => {
+      if (revealed) return;
+      revealed = true;
+      content.forEach((el) => {
+        if (instant) el.classList.add("is-instant");
+        el.classList.add("is-in");
+      });
+    };
+
+    // Loop takes over: start it, and only once it is actually rendering
+    // frames hide the intro (which keeps showing its last frame until then,
+    // so there is never an empty frame) and reveal the content.
+    const activateLoop = () => {
+      if (loopActivated || !loop.isConnected) return;
+      loopActivated = true;
+      wantLoop(true);
+
+      let switched = false;
+      const switchNow = () => {
+        if (switched) return;
+        switched = true;
+        hideIntro();
+        reveal(false);
+      };
+      const onPlaying = () => {
+        if (typeof loop.requestVideoFrameCallback === "function") {
+          loop.requestVideoFrameCallback(switchNow);
+          // Frame callbacks don't fire for a hidden tab; don't wait on them.
+          window.setTimeout(switchNow, 250);
+        } else {
+          switchNow();
+        }
+      };
+
+      loop.addEventListener("playing", onPlaying, { once: true });
+      loop.play().catch(() => {
+        // First attempt refused: show the content now and keep retrying
+        // the loop in the background.
+        switchNow();
+        startLoop();
+      });
+      // Never leave the content hidden if the loop is slow or broken.
+      loop.addEventListener("error", switchNow, { once: true });
+      window.setTimeout(switchNow, 2500);
+    };
+
+    // Reduced motion, or the intro already ran during this page load
+    // (client-side navigation back to "/"): no intro, loop right away.
+    if (reduceMotion || win.__heroIntroStarted) {
+      hideIntro();
+      reveal(true);
+      if (!reduceMotion) {
+        wantLoop(true);
+        startLoop();
+      }
+      return;
+    }
+    win.__heroIntroStarted = true;
+
+    intro.addEventListener("ended", activateLoop, { once: true });
+    // If the intro cannot load or play, fall back to the loop + content.
+    intro.addEventListener("error", () => {
+      if (intro.hasAttribute("src")) activateLoop();
+    }, { once: true });
+    intro.play().catch(activateLoop);
+    // The browser can pause a muted video on its own (tab/pane hidden,
+    // power saving). Resume it so the intro still reaches `ended`; if it
+    // refuses, fall back to the loop.
+    intro.addEventListener("pause", () => {
+      if (!intro.ended && !loopActivated && intro.hasAttribute("src") && intro.isConnected) {
+        intro.play().catch(activateLoop);
+      }
+    });
+    // Not a guess at the intro's length: only covers a video that never
+    // starts (blocked or stalled network), so content can't stay hidden.
+    window.setTimeout(() => {
+      if (intro.isConnected && intro.readyState < 2 && intro.currentTime === 0) activateLoop();
+    }, 6000);
+  });
+</script>
+<style is:global>
+  /* Hero content reveal */
+  .hero-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .hero-reveal.is-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--hero-reveal-delay, 0ms),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--hero-reveal-delay, 0ms);
+  }
+
+  .hero-reveal.is-instant {
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<style>
+  .hero-gradient {
+    position: relative;
+    min-height: calc(100svh + 180px);
+    background-color: #071033;
+  }
+
+  /* Mobile only (< 640px): a viewport-height hero instead of the extra
+     180px, the text group placed above the video's dotted globe with clear
+     space between them, and the video scaled down (anchored to the bottom,
+     its dark top blending into the hero background) so the globe is about
+     85vw wide instead of overflowing the screen. The globe sits at roughly
+     50svh, so the text group ends ~36px above it. Everything >= 640px is
+     untouched. */
+  @media (max-width: 639.98px) {
+    .hero-gradient {
+      min-height: 100svh;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .hero-gradient > video {
+      /* Wider than the screen by 1/0.9, so it still covers edge to edge
+         once scaled down. */
+      left: -6%;
+      right: auto;
+      width: 112%;
+      max-width: none;
+      transform: scale(0.9);
+      transform-origin: 50% 100%;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 16%);
+    }
+    .hero-gradient > .container {
+      flex: none;
+      justify-content: flex-start;
+      /* The clamp()ed type grows a little with width, so lift the group with it.
+         (-130px = the original -190px, lowered by 60px for more room under the header.) */
+      padding-top: calc(50svh - 130px - (100vw - 375px) * 0.45);
+    }
+    .hero-gradient [data-globe-size] {
+      height: 0;
+      margin-top: 0;
+    }
+  }
+
+  .hero-gradient::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 32%;
+    z-index: 1;
+    pointer-events: none;
+
+    background: linear-gradient(
+      to bottom,
+      rgba(246, 247, 249, 0) 0%,
+      rgba(246, 247, 249, 0.08) 25%,
+      rgba(246, 247, 249, 0.28) 50%,
+      rgba(246, 247, 249, 0.65) 75%,
+      #F6F7F9 100%
+    );
+  }
 
 </style>
 <!-- Banner -->
 <!-- about us -->
-<section class="relative z-10 -mt-20 overflow-hidden rounded-t-[80px] bg-[#F6F7F9] pt-24 pb-6 md:pb-9 lg:pb-12">
+<section class="relative z-10 overflow-hidden bg-[#F6F7F9] pt-24 pb-8 max-sm:pb-[72px] md:pb-9 lg:pb-12">
     <!-- Desktop/XL width matches the shared .container's rhythm (max-w-[1160px],
        padding dropping to 0 at 2xl) so this composition's outer left/right
        edges line up with the Services section below -- mobile/tablet keep
@@ -184,22 +448,17 @@ const posts = await getSinglePage("blog");
            there. -->
       <div class="relative z-10 flex flex-col justify-center overflow-hidden bg-white px-[30px] py-11 sm:px-12 sm:py-12 lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:w-[calc(56%+3.5rem)] lg:rounded-[56px] lg:py-0 lg:pl-20 lg:pr-[60px]">
         <div class="relative mx-auto w-full max-w-md text-right" dir="rtl">
-          <div class="mb-3 flex items-center justify-start gap-3" data-aos="fade-up-sm">
-            <span class="h-px w-10 bg-[#034EFF]"></span>
-            <span class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading">
-              About Jadh
-            </span>
-          </div>
-
-          <h2
-            class="text-[26px] font-bold leading-tight text-black md:text-[32px] lg:text-[36px] xl:text-[40px] [&_strong]:font-bold [&_strong]:text-muted-heading"
+          <SectionHeading
+            eyebrow="About Jadh"
+            ar={plain(aboutTitle.ar)}
+            en={plain(aboutTitle.en)}
+            align="right"
+            class="section-heading--compact"
             data-aos="fade-up-sm"
-            data-aos-delay="50"
-            set:html={markdownify(about.title)}
           />
 
           <p
-            class="mt-4 text-[14px] leading-[1.55] md:text-[15px] xl:leading-[1.7]"
+            class="text-[14px] leading-[1.55] md:text-[15px] xl:leading-[1.7]"
             data-aos="fade-up-sm"
             data-aos-delay="100"
           >
@@ -238,18 +497,16 @@ const posts = await getSinglePage("blog");
 
 
   <!-- service -->
-  <section class="bg-white py-6 md:py-9 lg:py-12">
+  <section class="bg-white py-8 max-sm:py-[72px] md:py-9 lg:py-12">
     <div class="container">
-      <div class="mb-12 flex items-end justify-between gap-8 lg:mb-14" dir="rtl">
-        <h2 class="max-w-2xl text-black lg:max-w-3xl" data-aos="fade-up-sm">
-          <span class="block text-[26px] font-bold leading-tight text-black md:whitespace-nowrap md:text-[34px] lg:text-[42px]">
-            {serviceTitle.ar}
-          </span>
-          <span class="mt-2 block text-lg font-medium text-muted-heading md:text-xl lg:text-2xl">
-            {serviceTitle.en}
-          </span>
-        </h2>
-      </div>
+      <SectionHeading
+        eyebrow="Our Solutions"
+        ar={serviceTitle.ar}
+        en={serviceTitle.en}
+        align="right"
+        class="section-heading--long"
+        data-aos="fade-up-sm"
+      />
       <div class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" dir="rtl">
         {
           service.services.map((s, i: number) => {
@@ -317,22 +574,18 @@ const posts = await getSinglePage("blog");
 
   <!-- feature -->
 
-  <section class="bg-white py-6 md:py-9 lg:py-12">
+  <section class="bg-white py-8 max-sm:py-[72px] md:py-9 lg:py-12">
     <div class="container">
-      <div class="justify-center mb-8 row lg:mb-10">
-        <div class="lg:col-8">
-          <h2
-            class="text-center mb-4 text-black [&_strong]:font-bold [&_strong]:text-muted-heading [&_strong]:opacity-100"
+      <div class="justify-center row">
+        <div class="lg:col-10">
+          <SectionHeading
+            eyebrow="Our Values"
+            ar={plain(featureTitle.ar)}
+            en={plain(featureTitle.en)}
+            align="center"
+            class="section-heading--long"
             data-aos="fade-up-sm"
-            set:html={markdownify(feature.title)}
           />
-        </div>
-        <div class="lg:col-6">
-          <p class="text-center" data-aos="fade-up-sm">
-            <span class="text-black" set:html={markdownify(featureContent.ar)} />
-            <br />
-            <span class="text-muted-body" set:html={markdownify(featureContent.en)} />
-          </p>
         </div>
       </div>
       <div
@@ -346,7 +599,7 @@ const posts = await getSinglePage("blog");
 
   <!-- review -->
   {
-    testimonial.data.enable && (
+    false && (
       <section class="bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
         <div class="container relative z-10 mx-auto max-w-[1200px]">
           <div class="pb-8 lg:pb-10">
@@ -390,21 +643,21 @@ const posts = await getSinglePage("blog");
   <!-- review -->
 
   <!-- brand -->
-  <section class="bg-white py-6 md:py-9 lg:py-12">
+  <section class="bg-white py-8 max-sm:py-[72px] md:py-9 lg:py-12">
     <div class="container">
-      <div class="mb-10 text-center md:mb-12">
-        <p
-          class="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading"
-          data-aos="fade-up-sm"
-        >
-          Our Partners
-        </p>
-        <h2 data-aos="fade-up-sm" data-aos-delay="50">
-          شركاؤنا
-        </h2>
-      </div>
+      <SectionHeading
+        eyebrow="Our Partners"
+        ar="شركاؤنا"
+        en="Our Partners"
+        align="center"
+        data-aos="fade-up-sm"
+      />
 
-      <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 md:gap-x-12 md:gap-y-8">
+      <div
+        class="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 md:gap-x-12 md:gap-y-8"
+        data-aos="fade-up-sm"
+        data-aos-delay="100"
+      >
         {
           brandLogos.map((brand) => (
             <div class="flex w-40 items-center justify-center grayscale opacity-60 transition duration-300 hover:opacity-100 hover:grayscale-0">
@@ -466,5 +719,5 @@ const posts = await getSinglePage("blog");
   </section>
   <!-- blog -->
 
-  <CallToAction />
+  <CallToAction unifiedHeading />
 </Base>

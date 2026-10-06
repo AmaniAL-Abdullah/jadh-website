@@ -36,14 +36,13 @@ const contactItems = [
 
 <Base {...pageIndex.data} title="تواصل معنا | جادة الأفق">
   <!-- Hero: compact, light, consistent with About/Services -->
-  <section class="relative overflow-hidden bg-[#F6F7F9] pt-20 pb-6 md:pb-9 lg:pt-24 lg:pb-12">
+  <section class="relative overflow-hidden bg-[#F6F7F9] pt-20 pb-10 sm:pb-8 md:pb-9 lg:pt-24 lg:pb-12">
     <div class="container relative z-10 text-center">
       <div class="mb-4 flex items-center justify-center gap-3" data-aos="fade-up-sm">
-        <span class="h-px w-10 bg-[#034EFF]"></span>
         <span class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading">
           Get In Touch
         </span>
-        <span class="h-px w-10 bg-[#034EFF]"></span>
+        <span class="jadh-dot" aria-hidden="true"></span>
       </div>
       <h1
         class="text-4xl font-bold leading-tight text-black lg:text-5xl"
@@ -57,7 +56,7 @@ const contactItems = [
   </section>
 
   <!-- Info + form split -->
-  <section class="bg-white py-6 md:py-9 lg:py-12">
+  <section class="section-y section-y--after-hero bg-white">
     <div class="container">
       <div class="grid gap-10 lg:grid-cols-[58%_38%] lg:gap-14" dir="rtl">
         <!-- Form card -->
@@ -132,7 +131,7 @@ const contactItems = [
               type="submit"
               label="إرسال"
               variant="blue"
-              class="w-full justify-center sm:w-auto sm:justify-start"
+              class="contact-submit max-sm:mx-auto max-sm:flex max-sm:w-fit"
               data-aos="fade-up-sm"
               data-aos-delay="350"
             />
@@ -141,11 +140,11 @@ const contactItems = [
 
         <!-- Contact info -->
         <div data-aos="fade-up-sm">
-          <div class="mb-6 flex items-center justify-end gap-3">
+          <div class="mb-6 flex items-center justify-start gap-3 max-sm:justify-end" dir="ltr">
             <span class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading">
               Contact Info
             </span>
-            <span class="h-px w-10 bg-[#034EFF]"></span>
+            <span class="jadh-dot" aria-hidden="true"></span>
           </div>
 
           <div class="flex flex-col gap-6">
@@ -240,5 +239,69 @@ const contactItems = [
   .form-input:focus {
     border-color: #034eff;
     box-shadow: 0 0 0 3px rgba(3, 78, 255, 0.12);
+  }
+</style>
+
+<style is:global>
+  /* Pill CTAs on this page: everything stays clipped inside the pill, and
+     the hover is a small contained nudge (circle +4%, arrow 3px) instead of
+     the shared circle slide, which could poke past the pill's rounded end.
+     Hover motion is for real pointers only; touch gets a tap-scale. */
+  main .jadh-btn {
+    overflow: hidden;
+  }
+  main .jadh-btn:hover .jadh-btn__circle,
+  main .jadh-btn:hover .jadh-btn__arrow {
+    transform: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    main .jadh-btn:hover .jadh-btn__circle {
+      transform: scale(1.04);
+    }
+    main .jadh-btn:hover .jadh-btn__arrow {
+      transform: translateX(calc(var(--jadh-btn-shift, 1) * 3px));
+    }
+  }
+  @media (max-width: 639.98px) {
+    main .jadh-btn {
+      transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+    }
+    main .jadh-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Submit: the same compact pill as the "ابدأ الآن" CTA below (the shared
+       .jadh-btn--md sizing: 44px pill, 34px circle, 5px inset), centred, with
+       the white arrow circle on the RIGHT. The pill is laid out LTR here so
+       the circle trails to the right; the Arabic label is a single word, so
+       its own direction is unaffected. */
+    .contact-submit.jadh-btn--md {
+      direction: ltr;
+      --jadh-btn-shift: 1 !important;
+      height: 44px;
+      gap: 10px;
+      padding-inline-start: 20px;
+      padding-inline-end: 5px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .contact-submit.jadh-btn--md .jadh-btn__circle {
+      width: 34px;
+      height: 34px;
+    }
+    .contact-submit.jadh-btn--md .jadh-btn__arrow {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    main .jadh-btn:active,
+    main .jadh-btn:hover .jadh-btn__circle,
+    main .jadh-btn:hover .jadh-btn__arrow {
+      transform: none !important;
+    }
   }
 </style>

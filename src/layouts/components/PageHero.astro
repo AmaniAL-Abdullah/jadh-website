@@ -1,0 +1,47 @@
+---
+// Shared hero for inner pages (About, Services): the same eyebrow + dot,
+// Arabic H1, English subtitle, and Arabic/English supporting copy as the
+// rest of the site, with one restrained staggered entrance. Typography and
+// spacing live in components.css (.page-hero*), so every inner hero stays
+// identical; pages only supply copy (and an optional button via the slot).
+export interface Props {
+  eyebrow: string;
+  ar: string;
+  en?: string;
+  descAr?: string;
+  descEn?: string;
+}
+
+const { eyebrow, ar, en, descAr, descEn } = Astro.props;
+---
+
+<section class="page-hero relative overflow-hidden">
+  <div class="container relative z-10">
+    <div class="page-hero__inner me-auto w-full max-w-2xl text-right" dir="rtl">
+      <p class="page-hero__eyebrow pg-reveal" style="--d: 80ms; --t: 500ms" dir="ltr">
+        <span>{eyebrow}</span>
+        <span class="jadh-dot" aria-hidden="true"></span>
+      </p>
+
+      <h1 class="page-hero__title">
+        <span class="page-hero__ar pg-reveal" style="--d: 160ms; --t: 650ms">{ar}</span>
+        {en && <span class="page-hero__en pg-reveal" style="--d: 260ms; --t: 600ms" dir="ltr">{en}</span>}
+      </h1>
+
+      {
+        (descAr || descEn) && (
+          <div class="page-hero__copy">
+            {descAr && <p class="page-hero__copy-ar pg-reveal" style="--d: 380ms; --t: 600ms">{descAr}</p>}
+            {descEn && (
+              <p class="page-hero__copy-en pg-reveal" style="--d: 470ms; --t: 600ms" dir="ltr">
+                {descEn}
+              </p>
+            )}
+          </div>
+        )
+      }
+
+      <slot />
+    </div>
+  </div>
+</section>

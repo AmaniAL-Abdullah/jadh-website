@@ -7,6 +7,8 @@ import CallToAction from "@/partials/CallToAction.astro";
 import Testimonial from "@/partials/Testimonial.astro";
 import { Icon } from "astro-icon/components";
 import Button from "@/components/Button.astro";
+import PageHero from "@/components/PageHero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
 
 const serviceIndex = await getListPage("services", "-index");
 if (serviceIndex.data.draft) {
@@ -23,9 +25,23 @@ const splitBilingual = (s: string) => {
   const parts = (s ?? "").split("<br>");
   return { ar: (parts[0] ?? "").trim(), en: (parts[1] ?? "").trim() };
 };
+const heroTitle = splitBilingual(banner_title);
 const heroDescription = splitBilingual(description);
 const reviewTitle = splitBilingual(testimonial.data.homepage_title);
 const reviewContent = splitBilingual(testimonial.data.content);
+
+// Below-hero reveal (stage 2): each service row is its own "chapter" and
+// starts only once its top has scrolled into the upper ~60% of the screen, so
+// the first row stays still while the hero is being read. The panel leads
+// (0ms) and the text follows ~100ms later. Same motion as the About page.
+const rowReveal = (i: number, delay: number) => ({
+  "data-aos-anchor": `#svc-row-${i}`,
+  "data-aos-anchor-placement": "top-center",
+  "data-aos-offset": "-100",
+  "data-aos-min-scroll": "56",
+  "data-aos-duration": "700",
+  "data-aos-delay": String(delay),
+});
 ---
 
 <Base {...serviceIndex.data} title="خدماتنا | جادة الأفق">
@@ -35,65 +51,32 @@ const reviewContent = splitBilingual(testimonial.data.content);
        same me-auto/max-w-2xl convention used on the About/Contact heroes)
        and uses its natural width instead of leaving a gap where the
        graphic used to be. -->
-  <section class="relative overflow-hidden bg-[#F6F7F9] pt-16 pb-6 md:pb-9 lg:pt-20 lg:pb-12">
-    <div class="container relative z-10">
-      <div class="me-auto w-full max-w-2xl text-right" dir="rtl">
-        <div class="mb-3 flex items-center justify-start gap-3">
-          <span class="h-px w-10 bg-[#034EFF]" data-aos="grow-line" data-aos-delay="80"></span>
-          <span
-            class="text-xs font-semibold uppercase tracking-[0.25em] text-muted-heading"
-            data-aos="fade-right-sm"
-          >
-            Our Services
-          </span>
-        </div>
-
-        {
-          banner_title && (
-            <h1
-              class="pb-4 text-black [&_strong]:font-bold [&_strong]:text-muted-heading [&_strong]:opacity-100"
-              data-aos="fade-up-sm"
-              data-aos-delay="80"
-              set:html={markdownify(banner_title)}
-            />
-          )
-        }
-
-        {
-          description && (
-            <p
-              class="max-w-xl text-[15px] leading-[1.7] lg:text-base"
-              data-aos="fade-up-sm"
-              data-aos-delay="140"
-            >
-              <span class="text-black" set:html={markdownify(heroDescription.ar)} />
-              <br />
-              <span class="text-muted-body" set:html={markdownify(heroDescription.en)} />
-            </p>
-          )
-        }
-
-        {
-          button?.enable && (
-            <Button
-              href={button.link}
-              label={button.label}
-              variant="blue"
-              dir="ltr"
-              class="svc-btn mt-6"
-              data-aos="fade-up-sm"
-              data-aos-delay="200"
-            />
-          )
-        }
-      </div>
-    </div>
-  </section>
+  <PageHero
+    eyebrow="Our Services"
+    ar={heroTitle.ar}
+    en={heroTitle.en}
+    descAr={heroDescription.ar.replace(/<[^>]+>/g, "")}
+    descEn={heroDescription.en.replace(/<[^>]+>/g, "")}
+  >
+    {
+      button?.enable && (
+        <Button
+          href={button.link}
+          label={button.label}
+          variant="blue"
+          dir="ltr"
+          class="svc-btn"
+          data-aos="fade-up-sm"
+          data-aos-delay="200"
+        />
+      )
+    }
+  </PageHero>
 
   <!-- Service list: existing alternating image/text layout, restyled with
        a static blue icon in a light panel instead of the oversized
        spinning black icon in a gray-bordered box. -->
-  <section class="bg-white py-6 md:py-9 lg:py-12">
+  <section class="section-y section-y--after-hero bg-white">
     <div class="container">
       <div class="mx-auto flex max-w-xl flex-col gap-20 lg:max-w-full lg:gap-24 xl:gap-28">
         {
@@ -102,29 +85,39 @@ const reviewContent = splitBilingual(testimonial.data.content);
             const c1 = splitBilingual(s.data.contact_1 as string);
             const c2 = splitBilingual(s.data.contact_2 as string);
             return (
-              <div dir="rtl" class="flex flex-col items-center justify-between gap-10 lg:flex-row">
+              <div
+                id={`svc-row-${i}`}
+                dir="rtl"
+                class="flex flex-col items-center justify-between gap-10 lg:flex-row"
+              >
                 <div class={`w-full text-right lg:w-[58%] ${i % 2 !== 0 ? "lg:order-2" : ""}`}>
                   <span
                     class="font-mono text-sm text-muted-body"
-                    data-aos="fade-up-sm"
-                    data-aos-delay={i * 100}
+                    data-aos="svc-rise"
+                    {...rowReveal(i, 100)}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3
-                    class="mb-6 mt-2 text-3xl font-bold leading-tight text-black lg:text-4xl"
-                    data-aos="fade-up-sm"
-                    data-aos-delay={i * 100 + 40}
-                  >
-                    {t.ar}
-                    <span class="mt-1 block text-xl font-medium text-muted-heading lg:text-2xl">
+                  <h3 class="mb-6 mt-2 text-3xl font-bold leading-tight text-black lg:text-4xl">
+                    <span
+                      class="block text-black"
+                      data-aos="svc-rise"
+                      {...rowReveal(i, 150)}
+                    >
+                      {t.ar}
+                    </span>
+                    <span
+                      class="mt-1 block text-xl font-medium text-muted-heading lg:text-2xl"
+                      data-aos="svc-rise"
+                      {...rowReveal(i, 200)}
+                    >
                       {t.en}
                     </span>
                   </h3>
                   <p
                     class="mb-5 text-[15px] leading-[1.7] lg:text-base"
-                    data-aos="fade-up-sm"
-                    data-aos-delay={i * 100 + 100}
+                    data-aos="svc-rise"
+                    {...rowReveal(i, 260)}
                   >
                     <span class="text-black">{c1.ar}</span>
                     <br />
@@ -132,32 +125,36 @@ const reviewContent = splitBilingual(testimonial.data.content);
                   </p>
                   <p
                     class="mb-8 text-[15px] leading-[1.7] lg:text-base"
-                    data-aos="fade-up-sm"
-                    data-aos-delay={i * 100 + 160}
+                    data-aos="svc-rise"
+                    {...rowReveal(i, 320)}
                   >
                     <span class="text-black">{c2.ar}</span>
                     <br />
                     <span class="text-muted-body">{c2.en}</span>
                   </p>
                   {s?.data?.button?.enable && (
-                    <Button
-                      href={s.data.button.link}
-                      label={s.data.button.label}
-                      variant="blue"
-                      dir="ltr"
-                      class="svc-btn"
-                      data-aos="fade-up-sm"
-                      data-aos-delay={i * 100 + 220}
-                    />
+                    <div
+                      class="inline-block"
+                      data-aos="svc-rise"
+                      {...rowReveal(i, 380)}
+                    >
+                      <Button
+                        href={s.data.button.link}
+                        label={s.data.button.label}
+                        variant="blue"
+                        dir="ltr"
+                        class="svc-btn"
+                      />
+                    </div>
                   )}
                 </div>
                 <div
-                  class="flex w-full justify-center lg:w-[38%] lg:justify-end"
-                  data-aos="image-reveal"
-                  data-aos-delay={i * 100 + 60}
+                  class="flex w-full justify-center lg:w-[410px] lg:shrink-0 lg:justify-end"
+                  data-aos="svc-panel"
+                  {...rowReveal(i, 0)}
                 >
-                  <div class="flex items-center justify-center rounded-2xl bg-[#F6F7F9] p-14 max-sm:p-10 md:p-16">
-                    <Icon name={s.data.image} class="h-auto w-[140px] max-sm:w-[100px] text-[#034EFF] md:w-[160px]" />
+                  <div class="flex h-[280px] w-[280px] shrink-0 items-center justify-center rounded-[32px] border border-[#034EFF]/[0.06] bg-[#F8F9FC] max-sm:aspect-square max-sm:h-auto max-sm:w-[calc(100%-40px)] max-sm:max-w-[430px] md:h-[320px] md:w-[320px] lg:h-[410px] lg:w-[410px]">
+                    <Icon name={s.data.image} class="spin-animation spin-animation--service h-auto w-[182px] max-sm:w-[175px] text-[#034EFF] md:w-[208px]" />
                   </div>
                 </div>
               </div>
@@ -173,24 +170,21 @@ const reviewContent = splitBilingual(testimonial.data.content);
        bg-primary band -- structurally and visually identical to the
        homepage version. -->
   {
-    testimonial.data.enable && (
-      <section class="bg-[#F6F7F9] py-6 md:py-9 lg:py-12">
+    false && testimonial.data.enable && (
+      <section class="section-y bg-[#F6F7F9]">
         <div class="container relative z-10 mx-auto max-w-[1200px]">
-          <div class="pb-8 lg:pb-10">
-            <div class="flex flex-col justify-center gap-10">
+          <div>
+            <div class="flex flex-col justify-center gap-12 lg:gap-16">
               <div>
-                <h2 class="pb-4 text-center" data-aos="fade-up-sm">
-                  <span
-                    class="block text-black max-sm:text-[21px]"
-                    set:html={markdownify(reviewTitle.ar)}
-                  />
-                  <span
-                    class="block text-muted-heading max-sm:text-[15px]"
-                    set:html={markdownify(reviewTitle.en)}
-                  />
-                </h2>
+                <SectionHeading
+                  ar={reviewTitle.ar.replace(/\*\*/g, "")}
+                  en={reviewTitle.en.replace(/\*\*/g, "")}
+                  align="center"
+                  class="section-heading--flush"
+                  data-aos="fade-up-sm"
+                />
                 <p
-                  class="mx-auto max-w-xl text-center max-sm:text-[14px] max-sm:leading-[1.7]"
+                  class="mx-auto mt-5 max-w-xl text-center max-sm:text-[14px] max-sm:leading-[1.7]"
                   data-aos="fade-up-sm"
                   data-aos-delay="80"
                 >

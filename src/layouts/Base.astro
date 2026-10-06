@@ -19,6 +19,14 @@ export interface Props {
 }
 // destructure frontmatter
 const { title, meta_title, description, image, noindex, canonical } = Astro.props;
+
+// Social preview image: the page's own `image` when it sets one, otherwise the
+// site-wide og-jdh.png. Always an absolute URL built from the production
+// base_url (never localhost or a relative path).
+const ogImagePath = image ? image : config.metadata.meta_image;
+const ogImage = /^https?:\/\//.test(ogImagePath)
+  ? ogImagePath
+  : `${config.site.base_url.replace(/\/$/, "")}/${ogImagePath.replace(/^\//, "")}`;
 ---
 
 
@@ -60,6 +68,19 @@ const { title, meta_title, description, image, noindex, canonical } = Astro.prop
 
     <ClientRouter />
 
+    <!-- Scroll-reveal safety net: [data-aos] content starts hidden, so if
+         JS is off (or AOS never initialises) it must show anyway. -->
+    <noscript>
+      <style>
+        [data-aos] {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
+
     <!-- author from config.json -->
     <meta name="author" content={config.metadata.meta_author} />
 
@@ -69,6 +90,7 @@ const { title, meta_title, description, image, noindex, canonical } = Astro.prop
     <!-- og-description -->
     <meta property="og:description" content={plainify(description ? description : config.metadata.meta_description)} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JADH AL OFOQ" />
     <meta property="og:url" content={`${config.site.base_url}/${Astro.url.pathname.replace("/", "")}`} />
 
     <!-- twitter-title -->
@@ -78,10 +100,10 @@ const { title, meta_title, description, image, noindex, canonical } = Astro.prop
     <meta name="twitter:description" content={plainify(description ? description : config.metadata.meta_description)} />
 
     <!-- og-image -->
-    <meta property="og:image" content={`${config.site.base_url}${image ? image : config.metadata.meta_image}`} />
+    <meta property="og:image" content={ogImage} />
 
     <!-- twitter-image -->
-    <meta name="twitter:image" content={`${config.site.base_url}${image ? image : config.metadata.meta_image}`} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
@@ -95,15 +117,40 @@ const { title, meta_title, description, image, noindex, canonical } = Astro.prop
     <script>
       import AOS from "aos";
       import "aos/dist/aos.css";
+      // [data-aos-min-scroll="N"] (top-center placement only): on tall screens
+      // content just below a short hero is already past the trigger line at
+      // load. Raise the element's offset so it still waits for N px of scroll
+      // -- below-hero content reveals on scroll, never on page load.
+      function holdUntilScrolled() {
+        const vh = window.innerHeight;
+        document.querySelectorAll<HTMLElement>("[data-aos-min-scroll]").forEach((el) => {
+          const min = Number(el.dataset.aosMinScroll) || 0;
+          const base = Number(el.getAttribute("data-aos-offset")) || 0;
+          const target = (el.getAttribute("data-aos-anchor") &&
+            document.querySelector(el.getAttribute("data-aos-anchor") as string)) as HTMLElement | null;
+          const top = (target ?? el).getBoundingClientRect().top + window.scrollY;
+          const needed = min - (top - vh / 2);
+          if (needed > base) el.setAttribute("data-aos-offset", String(Math.ceil(needed)));
+        });
+      }
       function aosInit() {
+        holdUntilScrolled();
         AOS.init({
-          duration: 600,
+          duration: window.innerWidth < 640 ? 600 : 700,
           once: true,
         });
       }
 
       aosInit();
       document.addEventListener("astro:after-swap", aosInit);
+    </script>
+    <script is:inline>
+      // If AOS has not tagged anything shortly after load, reveal the content.
+      setTimeout(function () {
+        if (document.querySelector("[data-aos]") && !document.querySelector(".aos-init")) {
+          document.documentElement.classList.add("aos-failed");
+        }
+      }, 2500);
     </script>
     <Footer />
   </body>

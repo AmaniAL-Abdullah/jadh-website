@@ -1,0 +1,36 @@
+---
+// Homepage section heading system: small English eyebrow + flat blue dot,
+// dominant Arabic title, secondary English title. Typography lives in
+// components.css (.section-heading*) so every section shares one set of
+// sizes/spacing; `variant` only swaps colours (light | dark/blue backgrounds)
+// and `align` only follows each section's own composition.
+export interface Props {
+  eyebrow?: string;
+  ar: string;
+  en?: string;
+  variant?: "light" | "dark";
+  align?: "right" | "center";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { eyebrow, ar, en, variant = "light", align = "right", class: className, ...rest } = Astro.props;
+---
+
+<div
+  class:list={["section-heading", `section-heading--${variant}`, `section-heading--${align}`, className]}
+  {...rest}
+>
+  {
+    eyebrow && (
+      <p class="section-heading__eyebrow" dir="ltr">
+        <span>{eyebrow}</span>
+        <span class="jadh-dot" aria-hidden="true"></span>
+      </p>
+    )
+  }
+  <h2 class="section-heading__title">
+    <span class="section-heading__ar" lang="ar" dir="rtl">{ar}</span>
+    {en && <span class="section-heading__en" lang="en" dir="ltr">{en}</span>}
+  </h2>
+</div>

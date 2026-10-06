@@ -1,0 +1,265 @@
+---
+// Page-load intro (final): white screen -> JADH Al Ofoq logo -> a zoom
+// *into the blue symbol* on the right until the viewport is solid blue ->
+// a very short solid #034EFF frame -> the blue overlay dissolves onto the
+// already-rendered Hero. The Hero itself is never touched.
+//
+// The logo is the unmodified /images/JadhAl-Ofoq.svg, drawn as one whole
+// bitmap (nothing is redrawn, recolored, split, or animated per part). The
+// zoom is a "camera" on a viewport-sized canvas: every frame the bitmap is
+// drawn with one scale + translate. That stays smooth at 50x+, whereas
+// CSS-scaling a layer that large gets clipped by the compositor.
+//
+// Zoom geometry (measured from the artwork, as fractions of its square
+// 1500x1500 canvas): the visible lockup spans x 0.038-0.958 / y 0.345-0.667;
+// the blue symbol tile sits on the right, and its largest solid-blue area
+// (the band above the first white stripe) is a circle of radius ~0.053
+// centred at (0.753, 0.398). The camera pans that point to the viewport
+// centre while scaling until that circle alone covers the viewport, so the
+// wordmark leaves the screen by itself and no white/stripe/edge is left. The
+// scale is computed from the real viewport and logo size (never hard-coded),
+// so it covers any aspect ratio. The artwork's blue is a hair off brand
+// blue (#0C5EFF), so a #034EFF layer cross-fades in only once the screen is
+// already all blue -- the hand-over the viewer can't perceive.
+---
+
+<div id="intro-overlay" class="intro-overlay" aria-hidden="true">
+  <div class="intro-overlay__stage">
+    <div class="intro-overlay__white"></div>
+    <canvas class="intro-overlay__canvas"></canvas>
+  </div>
+  <div class="intro-overlay__blue"></div>
+</div>
+
+<style>
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    overflow: hidden;
+  }
+  .intro-overlay__stage,
+  .intro-overlay__white,
+  .intro-overlay__canvas,
+  .intro-overlay__blue {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .intro-overlay__white {
+    background: #ffffff;
+  }
+  .intro-overlay__canvas {
+    display: block;
+    opacity: 0;
+  }
+  .intro-overlay__blue {
+    background: #034eff;
+    opacity: 0;
+  }
+</style>
+
+<script>
+  // Module state (not storage): the intro belongs to a real page load, so
+  // it only runs for the first page-load event of this document. Every
+  // browser refresh of the homepage replays it; client-side navigations
+  // back to "/" do not.
+  let firstLoadHandled = false;
+
+  // CSS cubic-bezier(x1, y1, x2, y2) easing as a function of time -> progress.
+  const bezier = (x1: number, y1: number, x2: number, y2: number) => {
+    const cx = 3 * x1;
+    const bx = 3 * (x2 - x1) - cx;
+    const ax = 1 - cx - bx;
+    const cy = 3 * y1;
+    const by = 3 * (y2 - y1) - cy;
+    const ay = 1 - cy - by;
+    const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
+    const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
+    return (x: number) => {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      let lo = 0;
+      let hi = 1;
+      let t = x;
+      for (let i = 0; i < 24; i++) {
+        const v = sampleX(t);
+        if (Math.abs(v - x) < 1e-5) break;
+        if (v < x) lo = t;
+        else hi = t;
+        t = (lo + hi) / 2;
+      }
+      return sampleY(t);
+    };
+  };
+
+  document.addEventListener("astro:page-load", async () => {
+    const overlay = document.getElementById("intro-overlay");
+    if (!overlay) return;
+
+    const isFirstLoad = !firstLoadHandled;
+    firstLoadHandled = true;
+
+    const stage = overlay.querySelector<HTMLElement>(".intro-overlay__stage");
+    const canvas = overlay.querySelector<HTMLCanvasElement>(".intro-overlay__canvas");
+    const blue = overlay.querySelector<HTMLElement>(".intro-overlay__blue");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (
+      !isFirstLoad ||
+      reduceMotion ||
+      !stage ||
+      !canvas ||
+      !blue ||
+      typeof overlay.animate !== "function"
+    ) {
+      overlay.remove();
+      return;
+    }
+
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    const finish = () => {
+      root.style.overflow = previousOverflow;
+      overlay.remove();
+    };
+
+    // Sizes: visible lockup width (desktop 320 / tablet 280 / mobile 210-240),
+    // and the square SVG canvas it sits in (the lockup spans 92% of it).
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const lockupWidth = vw >= 1024 ? 320 : vw >= 640 ? 280 : Math.min(240, Math.max(210, vw * 0.6));
+    const S = lockupWidth / 0.92;
+
+    // Draw the unmodified SVG once into an offscreen bitmap. If anything
+    // here fails, skip the intro rather than leave a white screen up.
+    const resolution = Math.min(2048, Math.ceil(S * dpr * 2.5));
+    const bitmap = document.createElement("canvas");
+    bitmap.width = resolution;
+    bitmap.height = resolution;
+    const bctx = bitmap.getContext("2d");
+    const ctx = canvas.getContext("2d");
+    if (!bctx || !ctx) {
+      finish();
+      return;
+    }
+    try {
+      const source = new Image();
+      source.src = "/images/JadhAl-Ofoq.svg";
+      await source.decode();
+      bctx.imageSmoothingQuality = "high";
+      bctx.drawImage(source, 0, 0, resolution, resolution);
+    } catch {
+      finish();
+      return;
+    }
+    canvas.width = Math.round(vw * dpr);
+    canvas.height = Math.round(vh * dpr);
+
+    // Timeline (ms), measured from the moment the logo is ready
+    const ENTER = 300; //        0 - 300      logo entrance
+    const ZOOM_AT = 650; //      300 - 650    hold, then zoom...
+    const ZOOM_MS = 900; //      ...650 - 1550
+    const BLUE_AT = 1330; //     #034EFF layer cross-fades in once all blue,
+    const BLUE_MS = 220; //      fully opaque by 1550
+    const HIDE_STAGE_AT = 1600; // white + logo already fully covered
+    const DISSOLVE_AT = 1650; // 1550 - 1650 solid blue hold, then dissolve
+    const DISSOLVE_MS = 300; //  1650 - 1950
+    const zoomEase = bezier(0.76, 0, 0.24, 1);
+
+    // Zoom target and lockup centre, as fractions of the square SVG canvas.
+    const TARGET_X = 0.753;
+    const TARGET_Y = 0.398;
+    const TARGET_R = 0.053;
+    const LOCKUP_CX = 0.498;
+    const LOCKUP_CY = 0.506;
+
+    // Offset that centres the visible lockup (not the canvas) in the viewport.
+    const dx = (0.5 - LOCKUP_CX) * S;
+    const dy = (0.5 - LOCKUP_CY) * S;
+
+    // Visual scale (1 = display size) at which the solid-blue circle alone
+    // covers the viewport (8% margin), then overshoot so coverage is
+    // reached well before the zoom settles.
+    const halfDiagonal = Math.hypot(vw, vh) / 2;
+    const coverScale = (1.08 * halfDiagonal) / (TARGET_R * S);
+    const endScale = coverScale * 1.6;
+
+    // Target point offset from the viewport centre at display size.
+    const qx = (TARGET_X - 0.5) * S;
+    const qy = (TARGET_Y - 0.5) * S;
+    const pcx = dx + qx;
+    const pcy = dy + qy;
+
+    // One frame of the camera. p = eased zoom progress (0-1): geometric zoom
+    // (constant perceived speed per unit of progress) with the target point
+    // panned from its resting place to the viewport centre.
+    const draw = (p: number) => {
+      const sv = Math.exp(Math.log(endScale) * p);
+      const tx = pcx * (1 - p) - dx - sv * qx;
+      const ty = pcy * (1 - p) - dy - sv * qy;
+      const left = vw / 2 + dx + tx - (sv * S) / 2;
+      const top = vh / 2 + dy + ty - (sv * S) / 2;
+      const k = ((sv * S) / resolution) * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(k, 0, 0, k, left * dpr, top * dpr);
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(bitmap, 0, 0);
+    };
+    draw(0);
+
+    // 0.00-0.30s: logo entrance
+    canvas.animate(
+      [
+        { opacity: 0, transform: "scale(0.97)" },
+        { opacity: 1, transform: "scale(1)" },
+      ],
+      { duration: ENTER, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" },
+    );
+
+    // 0.65-1.55s: zoom into the blue symbol (frame-driven)
+    const start = performance.now();
+    const tick = () => {
+      const t = performance.now() - start;
+      if (t >= ZOOM_AT + ZOOM_MS) {
+        draw(1);
+        return;
+      }
+      if (t >= ZOOM_AT) draw(zoomEase((t - ZOOM_AT) / ZOOM_MS));
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
+    // Solid brand blue takes over the (already all-blue) frame
+    blue.animate([{ opacity: 0 }, { opacity: 1 }], {
+      delay: BLUE_AT,
+      duration: BLUE_MS,
+      easing: "linear",
+      fill: "forwards",
+    });
+
+    // White + logo are hidden behind the opaque blue before the dissolve, so
+    // the dissolve shows only the Hero. On the animation timeline, not a
+    // timer, so it is frame-exact.
+    stage.animate([{ visibility: "visible" }, { visibility: "hidden" }], {
+      delay: HIDE_STAGE_AT,
+      duration: 1,
+      fill: "forwards",
+    });
+
+    // 1.65-1.95s: dissolve ONLY the blue overlay onto the Hero
+    blue.animate([{ opacity: 1 }, { opacity: 0 }], {
+      delay: DISSOLVE_AT,
+      duration: DISSOLVE_MS,
+      easing: "cubic-bezier(0.45, 0, 0.55, 1)",
+      fill: "forwards",
+    });
+
+    // Remove the overlay entirely and give scrolling back.
+    setTimeout(finish, DISSOLVE_AT + DISSOLVE_MS + 50);
+  });
+</script>

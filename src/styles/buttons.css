@@ -72,12 +72,22 @@
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.jadh-btn:hover .jadh-btn__circle {
-  transform: translateX(calc(var(--jadh-btn-shift, 1) * 4px)) scale(1.06);
+/* Hover (one interaction for every pill, matching the Contact page): the pill
+   clips everything to its rounded shape, the circle grows a touch in place
+   and the arrow nudges 3px -- nothing can leave the pill. Pointers that can
+   hover only; touch devices get no hover motion. */
+.jadh-btn {
+  overflow: hidden;
 }
 
-.jadh-btn:hover .jadh-btn__arrow {
-  transform: translateX(calc(var(--jadh-btn-shift, 1) * 3px));
+@media (hover: hover) {
+  .jadh-btn:hover .jadh-btn__circle {
+    transform: scale(1.04);
+  }
+
+  .jadh-btn:hover .jadh-btn__arrow {
+    transform: translateX(calc(var(--jadh-btn-shift, 1) * 3px));
+  }
 }
 
 /* Sizes: comfortable on desktop, a touch smaller (height/text/circle

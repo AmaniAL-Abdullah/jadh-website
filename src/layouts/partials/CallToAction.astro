@@ -2,6 +2,10 @@
 import { getListPage } from "@/lib/contentParser.astro";
 import { markdownify } from "@/lib/utils/textConverter";
 import Button from "@/components/Button.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+
+// unifiedHeading: homepage-only -- uses the shared section-heading system.
+const { unifiedHeading = false } = Astro.props;
 
 const sectionData = await getListPage("callToAction", "call-to-action");
 if (!sectionData.data.enable) {
@@ -12,20 +16,84 @@ const { title, button } = sectionData.data;
 
 <!-- Flat, solid JADH-blue closing section -- no gradients/glows/lines, tall
      generous padding centers the content vertically and horizontally. -->
-<section class="relative bg-[#004EFF] py-16 md:py-24 lg:py-32">
-  <div class="container relative text-center text-white">
-    <h2 class="pb-4 text-white" data-aos="fade-up-sm" set:html={markdownify(title)} />
+<section
+  class:list={[
+    "relative overflow-hidden bg-[#004EFF] py-16 md:py-24 lg:py-32",
+    unifiedHeading && "cta--home",
+  ]}
+>
 
-    <p data-aos="fade-up-sm" data-aos-delay="50" class="mx-auto max-w-xl text-balance pb-8 text-white/70">
-      نسعد بتواصلكم والإجابة على استفساراتكم وتقديم حلول تدعم أعمالكم.
-      <br />
-      We’re happy to connect with you and support your business needs
-    </p>
+  <!-- Contact background video -->
+  <video
+    class:list={["pointer-events-none absolute inset-0 h-full w-full object-cover", unifiedHeading && "cta-home-video"]}
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+  >
+    <source src="/videos/contact-loop.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Content -->
+  <div class="container relative z-10 text-center text-white">
+    {
+      unifiedHeading ? (
+        <SectionHeading
+          variant="dark"
+          align="center"
+          class="section-heading--cta"
+          eyebrow="Let's Connect"
+          ar={title.split("<br>")[0].replace(/\*\*/g, "").trim()}
+          en={(title.split("<br>")[1] ?? "").replace(/\*\*/g, "").trim()}
+          data-aos="fade-up-sm"
+        />
+      ) : (
+        <h2 class="pb-4 text-white" data-aos="fade-up-sm" set:html={markdownify(title)} />
+      )
+    }
+
+    {
+      unifiedHeading ? (
+        <p
+          data-aos="fade-up-sm"
+          data-aos-delay="50"
+          class="mx-auto max-w-3xl pb-8 text-white/70 max-sm:max-w-none max-sm:pb-[25.6px]"
+        >
+          <span class="block text-[16px] leading-[1.7] max-sm:leading-[1.625] max-sm:text-balance sm:text-[18px] lg:text-[21px]">
+            نسعد بتواصلكم والإجابة على استفساراتكم وتقديم حلول تدعم أعمالكم.
+          </span>
+          <span class="mt-[6px] block text-[14px] leading-[1.55] max-sm:mt-0 max-sm:text-[16px] max-sm:leading-[1.625] max-sm:text-balance sm:mt-1 sm:text-[16px] sm:leading-[1.6] lg:text-[19px]">
+            We’re happy to connect with you and support your business needs
+          </span>
+        </p>
+      ) : (
+        <p
+          data-aos="fade-up-sm"
+          data-aos-delay="50"
+          class="mx-auto max-w-xl text-balance pb-8 text-white/70"
+        >
+          نسعد بتواصلكم والإجابة على استفساراتكم وتقديم حلول تدعم أعمالكم.
+          <br />
+          We’re happy to connect with you and support your business needs
+        </p>
+      )
+    }
 
     {
       button.enable && (
-        <div data-aos="fade-up-sm" data-aos-delay="100" class="cta-button-wrap w-fit mx-auto block">
-          <Button href={button.link} label={button.label} variant="white" dir="ltr" />
+        <div
+          data-aos="fade-up-sm"
+          data-aos-delay="100"
+          class="cta-button-wrap mx-auto block w-fit"
+        >
+          <Button
+            href={button.link}
+            label={button.label}
+            variant="white"
+            dir="ltr"
+          />
         </div>
       )
     }
@@ -71,6 +139,27 @@ const { title, button } = sectionData.data;
     .cta-button-wrap .jadh-btn--md .jadh-btn__arrow {
       width: 16px;
       height: 16px;
+    }
+  }
+
+  /* Homepage CTA on phones only (< 640px): the background wave is masked to
+     a band at the very bottom so it never runs through the copy or button. */
+  @media (max-width: 639.98px) {
+    .cta--home .cta-home-video {
+      -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - 72px), #000 calc(100% - 16px));
+      mask-image: linear-gradient(to bottom, transparent calc(100% - 72px), #000 calc(100% - 16px));
+    }
+    /* Button: no override -- it keeps the base CTA size (40px pill, 30px
+       circle), identical to the Contact page's. Same contained tap feedback. */
+    .cta--home .cta-button-wrap .jadh-btn {
+      overflow: hidden;
+      transition:
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+    }
+    .cta--home .cta-button-wrap .jadh-btn:active {
+      transform: scale(0.98);
     }
   }
 </style>

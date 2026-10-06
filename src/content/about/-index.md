@@ -1,8 +1,8 @@
 ---
-title: " <span class='block text-[26px] md:text-[44px] leading-[1] font-bold text-black'> جــادة الأفـــــق<span class='block mt-1 text-[19px] md:text-[30px] leading-[1] font-normal text-black'>حيث تلتقي الفرص بالحلول</span><span class='block mt-3 md:mt-4 text-[14px] md:text-[26px] leading-[1.2] font-normal tracking-[0.03em] text-muted-heading'>Where Opportunities Meet Solutions</span>"
+title: "حيث تلتقي الفرص بالحلول <br> Where Opportunities Meet Solutions"
 content_1: "نعمل على تطوير الأعمال وتقديم حلول متكاملة تربط بين التشغيل والتقنية والشراكات لبناء قيمة مستدامة وتجارب تنفيذ موثوقة "
 meta_title: "من نحن"
-description: "نربط بين الفرص والإمكانات لتقديم حلول تدعم نمو الأعمال <br> Connecting opportunities to business growth "
+description: "نربط الفرص بالحلول ونحوّل الإمكانات إلى قيمة تدعم نمو الأعمال <br> Connecting opportunities with solutions to create value that drives business growth."
 image: "/images/about-hero.webp"
 draft: false
 

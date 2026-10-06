@@ -11,7 +11,7 @@ const { footer }: { footer: any } = menu;
   as the RTL starting point, the glow is restrained brand blue instead of
   a bold orange wash, and there is no email signup or oversized wordmark.
 -->
-<footer class="relative overflow-hidden bg-[#0A0A0A] pt-6 pb-8 md:pt-9 lg:pt-12 text-white">
+<footer id="site-footer" class="relative overflow-hidden bg-[#0A0A0A] pt-6 pb-8 md:pt-9 lg:pt-12 text-white">
   <!-- Restrained atmospheric texture: a soft blue glow behind the logo,
        plus a fine dot texture that fades out from the same point. Static
        CSS only -- no canvas/JS needed for something this subtle. -->
@@ -31,36 +31,36 @@ const { footer }: { footer: any } = menu;
          to its left -- one spacious horizontal composition, not a stacked
          logo-then-grid layout. -->
     <div
-      class="flex flex-col gap-12 border-b border-white/10 pb-14 lg:flex-row lg:items-start lg:justify-between lg:gap-10"
+      class="flex flex-col gap-12 max-sm:gap-[28px] border-b border-white/10 pb-14 lg:flex-row lg:items-start lg:justify-between lg:gap-10"
       dir="rtl"
     >
       <!-- Brand -->
-      <div class="flex shrink-0 items-start gap-3">
-        <img src="/images/JDH-Blue-.svg" alt="Jadh Al Ofoq" class="mt-1 h-8 w-8 object-contain" />
+      <div class="flex shrink-0 items-start gap-3" data-aos="fade-up-sm" data-aos-anchor="#site-footer">
+        <img src="/images/JDH-Blue-.svg" alt="Jadh Al Ofoq" class="mt-1 h-8 w-8 object-contain max-sm:mt-0.5 max-sm:h-[36px] max-sm:w-[36px]" />
         <div>
-          <div class="text-2xl font-bold tracking-tight text-white">جادة الأفق</div>
-          <div class="mt-0.5 text-xs uppercase tracking-[0.2em] text-muted-heading">Jadh Al Ofoq</div>
-          <p class="mt-4 text-sm leading-relaxed text-[#E2E7F2]/70">
+          <div class="text-2xl font-bold tracking-tight text-white max-sm:text-[24px] max-sm:leading-[1.15]">جادة الأفق</div>
+          <div class="mt-0.5 text-xs uppercase tracking-[0.2em] text-muted-heading max-sm:mt-0.5 max-sm:text-[11px]">Jadh Al Ofoq</div>
+          <p class="mt-4 text-sm leading-relaxed text-[#E2E7F2]/70 max-sm:mt-3 max-sm:text-[13.5px] max-sm:leading-[1.55]">
             حلول متكاملة للأعمال والتشغيل
-            <span class="mt-1 block text-muted-heading">Integrated business solutions</span>
+            <span class="mt-1 block text-muted-heading max-sm:text-[12px]">Integrated business solutions</span>
           </p>
         </div>
       </div>
 
       <!-- Groups -->
-      <div class="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:gap-x-16">
-        <div class="text-right">
-          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">روابط</h6>
-          <ul class="flex flex-col gap-2.5 text-[#E2E7F2]">
+      <div class="grid grid-cols-2 gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3 lg:gap-x-16">
+        <div class="text-right" data-aos="fade-up-sm" data-aos-anchor="#site-footer" data-aos-delay="100">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading max-sm:mb-3 max-sm:text-[10.5px]">روابط</h6>
+          <ul class="flex flex-col gap-2.5 text-[#E2E7F2] max-sm:gap-2 max-sm:text-[14px] max-sm:font-medium max-sm:leading-[1.55]">
             <li><a href="/services" class="transition hover:text-white">الخدمات</a></li>
             <li><a href="/about" class="transition hover:text-white">من نحن</a></li>
             <li><a href="/" class="transition hover:text-white">الرئيسية</a></li>
           </ul>
         </div>
 
-        <div class="text-right">
-          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">الموقع</h6>
-          <div class="flex flex-col gap-2.5 text-[#E2E7F2]">
+        <div class="text-right" data-aos="fade-up-sm" data-aos-anchor="#site-footer" data-aos-delay="180">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading max-sm:mb-3 max-sm:text-[10.5px]">الموقع</h6>
+          <div class="flex flex-col gap-2.5 text-[#E2E7F2] max-sm:gap-2 max-sm:text-[14px] max-sm:font-medium max-sm:leading-[1.55]">
             <a
               href="https://maps.app.goo.gl/8iFDx8a5YDew7S5J8"
               target="_blank"
@@ -78,9 +78,9 @@ const { footer }: { footer: any } = menu;
           </div>
         </div>
 
-        <div class="text-right">
-          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading">تواصل</h6>
-          <div class="mb-3 flex items-center justify-end gap-3">
+        <div class="text-right" data-aos="fade-up-sm" data-aos-anchor="#site-footer" data-aos-delay="260">
+          <h6 class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-heading max-sm:mb-3 max-sm:text-[10.5px]">تواصل</h6>
+          <div class="mb-3 flex items-center justify-end gap-3 max-sm:mb-2 max-sm:justify-start max-sm:gap-2.5">
             <!-- X -->
             <a
               href="https://x.com/jadhksa?s=21"
@@ -88,7 +88,7 @@ const { footer }: { footer: any } = menu;
               aria-label="X (Twitter)"
               class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
             >
-              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] max-sm:h-[16px] max-sm:w-[16px]" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
@@ -99,7 +99,7 @@ const { footer }: { footer: any } = menu;
               aria-label="LinkedIn"
               class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
             >
-              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] max-sm:h-[16px] max-sm:w-[16px]" fill="currentColor">
                 <circle cx="4.5" cy="4.75" r="2.35"/>
                 <rect x="2.6" y="9" width="3.8" height="12" rx="0.4"/>
                 <path d="M9.6 21V9h3.8v1.9c1-1.5 2.7-2.4 4.7-2.4 3.8 0 6.5 2.5 6.5 7.4V21h-3.8v-8.6c0-2.3-1.1-3.7-3.1-3.7-1.6 0-2.7 1-3.1 2-.1.3-.2.8-.2 1.3V21z"/>
@@ -112,7 +112,7 @@ const { footer }: { footer: any } = menu;
               aria-label="Email"
               class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
             >
-              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] max-sm:h-[16px] max-sm:w-[16px]" fill="currentColor">
                 <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-9.75 5.85a1.5 1.5 0 0 1-1.5 0L1.5 8.67ZM22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l10.5 6.3 10.5-6.3Z"/>
               </svg>
             </a>
@@ -123,12 +123,12 @@ const { footer }: { footer: any } = menu;
               aria-label="WhatsApp"
               class="group -m-2 inline-flex items-center justify-center p-2 text-[#E2E7F2]/80 transition-all duration-300 ease-out hover:-translate-y-px hover:text-[#034EFF]"
             >
-              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor">
+              <svg viewBox="0 0 24 24" class="h-[18px] w-[18px] max-sm:h-[16px] max-sm:w-[16px]" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
               </svg>
             </a>
           </div>
-          <a href="tel:0176227083" class="text-[#E2E7F2] transition hover:text-white">
+          <a href="tel:0176227083" class="text-[#E2E7F2] transition hover:text-white max-sm:text-[14px] max-sm:font-medium">
             0176227083
           </a>
         </div>

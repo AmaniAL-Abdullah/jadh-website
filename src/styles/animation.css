@@ -1,6 +1,10 @@
 .spin-animation {
   animation: spin 60s linear infinite;
 }
+/* Services page icons: same keyframes, a calmer-but-visible 16s turn. */
+.spin-animation--service {
+  animation-duration: 16s;
+}
 /* spin-animation */
 @keyframes spin {
   0% {
@@ -11,9 +15,13 @@
   }
 }
 
-/* aos animation */
+/* aos animation -- one easing for every scroll entrance, matching the
+   page-hero entrance (.pg-reveal). */
+[data-aos] {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
 [data-aos="fade-up-sm"] {
-  transform: translateY(30px);
+  transform: translateY(24px);
   opacity: 0;
   transition-property: transform, opacity;
   &.aos-animate {
@@ -22,7 +30,7 @@
   }
 }
 [data-aos="fade-left-sm"] {
-  transform: translateX(30px);
+  transform: translateX(24px);
   opacity: 0;
   transition-property: transform, opacity;
   &.aos-animate {
@@ -31,12 +39,59 @@
   }
 }
 [data-aos="fade-right-sm"] {
-  transform: translateX(-30px);
+  transform: translateX(-24px);
   opacity: 0;
   transition-property: transform, opacity;
   &.aos-animate {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+/* Phones: the same reveals, just lighter -- shorter travel so nothing moves far
+   enough to touch the screen edge or add horizontal scroll. */
+@media (max-width: 639.98px) {
+  [data-aos="fade-up-sm"] {
+    transform: translateY(16px);
+  }
+  [data-aos="fade-left-sm"] {
+    transform: translateX(14px);
+  }
+  [data-aos="fade-right-sm"] {
+    transform: translateX(-14px);
+  }
+}
+
+/* Services page rows: text rises with a brief blur that fully clears, the
+   visual panel softly settles (rise + tiny scale). Same easing and
+   durations as every other entrance; blur exists only while entering. */
+[data-aos="svc-rise"] {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(4px);
+  transition-property: transform, opacity, filter;
+  &.aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+[data-aos="svc-panel"] {
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+  transition-property: transform, opacity;
+  &.aos-animate {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 639.98px) {
+  [data-aos="svc-rise"] {
+    transform: translateY(14px);
+    filter: blur(3px);
+  }
+  [data-aos="svc-panel"] {
+    transform: translateY(14px) scale(0.98);
   }
 }
 
@@ -85,9 +140,20 @@
    top of content that's already there -- under reduced motion, skip the
    animation entirely rather than easing it, so content is simply present
    with no transform/clip/opacity delay regardless of scroll position. */
+html.aos-failed [data-aos] {
+  transition: none !important;
+  filter: none !important;
+  transform: none !important;
+  clip-path: none !important;
+  opacity: 1 !important;
+}
 @media (prefers-reduced-motion: reduce) {
+  .spin-animation {
+    animation: none;
+  }
   [data-aos] {
     transition: none !important;
+    filter: none !important;
     transform: none !important;
     clip-path: none !important;
     opacity: 1 !important;
